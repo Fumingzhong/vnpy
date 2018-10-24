@@ -1,10 +1,10 @@
 [
     {
-        "name": "m.09-01",
+        "name": "m.01-05",
 
         "activeLeg": 
             {
-                "vtSymbol": "m1709",
+                "vtSymbol": "m1901",
                 "ratio": 1,
                 "multiplier": 1.0,
                 "payup": 2
@@ -12,7 +12,7 @@
 
         "passiveLegs": [
             {
-                "vtSymbol": "m1801",
+                "vtSymbol": "m1905",
                 "ratio": -1,
                 "multiplier": -1.0,
                 "payup": 2
@@ -21,11 +21,11 @@
     },
 
     {
-        "name": "IF.07-09",
+        "name": "IF.11-12",
 
         "activeLeg": 
             {
-                "vtSymbol": "IF1707",
+                "vtSymbol": "IF1811",
                 "ratio": 1,
                 "multiplier": 1.0,
                 "payup": 2
@@ -33,7 +33,7 @@
 
         "passiveLegs": [
             {
-                "vtSymbol": "IF1709",
+                "vtSymbol": "IF1812",
                 "ratio": -1,
                 "multiplier": -1.0,
                 "payup": 2
@@ -42,11 +42,11 @@
     },
 
     {
-        "name": "IH.07-09",
+        "name": "IH.11-12",
 
         "activeLeg": 
             {
-                "vtSymbol": "IH1707",
+                "vtSymbol": "IH1811",
                 "ratio": 1,
                 "multiplier": 1.0,
                 "payup": 2
@@ -54,7 +54,7 @@
 
         "passiveLegs": [
             {
-                "vtSymbol": "IH1709",
+                "vtSymbol": "IH1812",
                 "ratio": -1,
                 "multiplier": -1.0,
                 "payup": 2
@@ -63,11 +63,11 @@
     },
 
     {
-        "name": "IC.07-09",
+        "name": "IC.11-12",
 
         "activeLeg": 
             {
-                "vtSymbol": "IC1707",
+                "vtSymbol": "IC1811",
                 "ratio": 1,
                 "multiplier": 1.0,
                 "payup": 2
@@ -75,7 +75,7 @@
 
         "passiveLegs": [
             {
-                "vtSymbol": "IC1709",
+                "vtSymbol": "IC1812",
                 "ratio": -1,
                 "multiplier": -1.0,
                 "payup": 2
