@@ -273,23 +273,296 @@ class MultiDataEngine(object):
     
 ########################################################################
 class MultiAlgoEngine(object):
-    """"""
+    """组合算法交易引擎"""
+    algoFileName = 'multiTradingAlgo.vt'
+    algoFilePath = getTempPath(algoFileName)
 
     #----------------------------------------------------------------------
-    def __init__(self):
+    def __init__(self, dataEngine, mainEngine, eventEngine):
         """Constructor"""
-        pass
+        self.dataEngine = dataEngine
+        self.mainEngine = mainEngine
+        self.eventEngine = eventEngine
+        
+        self.algoDict = OrderedDict()           # multiName:algo
+        self.vtSymbolAlgoDict = {}              # vtSymbol:algo
+        
+        self.registerEvent(self)
+        
+    #----------------------------------------------------------------------
+    def registerEvent(self):
+        """注册事件监听"""
+        self.eventEngine.register(EVENT_MULTITRADING_TICK, self.processMultiTickEvent)
+        self.eventEngine.register(EVENT_MULTITRADING_POS, self.processMultiPosEvent)
+        self.eventEngine.register(EVENT_TRADE, self.processTradeEvent)
+        self.eventEngine.register(EVENT_ORDER, self.processOrderEvent)
+        self.eventEngine.register(EVENT_TIMER, self.processTimerEvent)
+        
+    #----------------------------------------------------------------------
+    def processMultiTickEvent(self, event):
+        """处理组合行情事件"""
+        multi = event.dict_['data']
+        
+        # 若组合的买卖价均为0， 则意味着尚未初始化，直接返回
+        if not multi.bidPrice and not multi.askPrice:
+            return 
+        
+        algo = self.algoDict.get(multi.name, None)
+        if algo:
+            algo.updateMultiTick(multi)
+            
+    #----------------------------------------------------------------------
+    def processMultiPosEvent(self, event):
+        """处理组合持仓事件"""
+        multi = event.dict_['data']
+        
+        algo = self.algoDict.get(multi.name, None)
+        if algo:
+            algo.updateMultiPos(multi)
+            
+    #----------------------------------------------------------------------
+    def processTradeEvent(self, event):
+        """处理成交事件"""
+        trade = event.dict_['data']
+        
+        algo = self.vtSymbolAlgoDict.get(trade.vtSymbol, None)
+        if algo:
+            algo.updateTrade(trade)
+            
+    #----------------------------------------------------------------------
+    def processOrderEvent(self, event):
+        """处理委托事件"""
+        order = event.dict_['data']
+        
+        algo = self.vtSymbolAlgoDict.get(order.vtSymbol, None)
+        if algo:
+            algo.updateOrder(order)
+            
+    #----------------------------------------------------------------------
+    def processTimerEvent(self, event):
+        """"""
+        for algo in self.algoDict.values():
+            algo.updateTimer()
+            
+    #----------------------------------------------------------------------
+    def sendOrder(self, vtSymbol, direction, offset, price, volume, payup=0):
+        """发单"""
+        contract = self.mainEngine.getContract(vtSymbol)
+        if not contract:
+            return ''
+        
+        req = VtOrderReq()
+        req.symbol = contract.symbol
+        req.exchange = contract.exchange
+        req.vtSymbol = contract.vtSymbol
+        req.direction = direction
+        req.offset = offset
+        req.volume = int(volume)
+        req.priceType = PRICETYPE_LIMITPRICE
+        
+        if direction == DIRECTION_LONG:
+            req.price = price + payup * contract.priceTick
+        else:
+            req.price = price - payup * contract.priceTick
+            
+        # 委托转换
+        reqList = self.mainEngine.convertOrderReq(req)
+        vtOrderIDList = []
+        
+        for req in reqList:
+            vtOrderID = self.mainEngine.sendOrder(req, contract.gatewayName)
+            vtOrderIDList.append(vtOrderID)
+        
+        return vtOrderIDList
+        
+    #----------------------------------------------------------------------
+    def cancelOrder(self, vtOrderID):
+        """撤单"""
+        order = self.mainEngine.getOrder(vtOrderID)
+        if not order:
+            return
+        
+        req = VtCancelOrderReq()
+        req.symbol = order.symbol
+        req.exchange = order.exchange
+        req.frontID = order.frontID
+        req.sessionID = order.sessionID
+        req.orderID = order.orderID
+        
+        self.mainEngine.cancelOrder(req, order.gatewayName)
+        
+    #----------------------------------------------------------------------
+    def buy(self, vtSymbol, price, volume, payup=0):
+        """买入"""
+        l = self.sendOrder(vtSymbol, DIRECTION_LONG, OFFSET_OPEN, price, volume, payup)
+        return l
+    
+    #----------------------------------------------------------------------
+    def sell(self, vtSymbol, price, volume, payup=0):
+        """卖出"""
+        l = self.sendOrder(vtSymbol, DIRECTION_SHORT, OFFSET_CLOSE, price, volume, payup)
+        return l
+    
+    #----------------------------------------------------------------------
+    def short(self, vtSymbol, price, volume, payup=0):
+        """卖空"""
+        l = self.sendOrder(vtSymbol, DIRECTION_SHORT, OFFSET_OPEN, price, volume, payup)
+        return l
+    
+    #----------------------------------------------------------------------
+    def cover(self, vtSymbol, price, volume, payup=0):
+        """平空"""
+        l = self.sendOrder(vtSymbol, DIRECTION_LONG, OFFSET_CLOSE, price, volume, payup)
+        return l
+    
+    #----------------------------------------------------------------------
+    def putAlgoEvent(self, algo):
+        """发出算法状态更新事件"""
+        event = Event(EVENT_MULTITRADING_ALGO + algo.name)          #algo.name是否应为algo.spreadName
+        self.eventEngine.put(event)
+        
+    #----------------------------------------------------------------------
+    def writeLog(self, content):
+        """输出日志"""
+        log = VtLogData()
+        log.logContent = content
+        
+        event = Event(EVENT_MULTITRADING_ALGOLOG)
+        event.dict_['data'] = log
+        
+        self.eventEngine.put(event)
+        
+    #----------------------------------------------------------------------
+    def saveSetting(self):
+        """保存算法配置"""
+        setting = {}
+        for algo in self.algoDict.values():
+            setting[algo.multiName] = algo.getAlgoParams()
+            
+        f = shelve.open(self.algoFilePath)
+        f['setting'] = setting
+        f.close()
+        
+    #----------------------------------------------------------------------
+    def loadSetting(self):
+        """加载算法配置"""
+        # 创建算法对象
+        l = self.dataEngine.getAllMultis()
+        for multi in l:
+            algo = SpreadOptionAlgo(self, multi)
+            self.algoDict[multi.name] = algo
+            
+            # 保存腿代码和算法对象的映射
+            for leg in multi.allLegs:
+                self.vtSymbolAlgoDict[leg.vtSymbol] = algo
+                
+        # 加载配置
+        f = shelve.open(self.algoFilePath)
+        setting = f.get('setting', None)
+        f.close()
+        
+        if not setting:
+            return
+        
+        for algo in self.algoDict.values():
+            if algo.multiName in setting:
+                d = setting[algo.multiName]
+                algo.setAlgoParams(d)
+                
+    #----------------------------------------------------------------------
+    def stopAll(self):
+        """停止全部算法"""
+        for algo in self.algoDict.values():
+            algo.stop()
+            
+    #----------------------------------------------------------------------
+    def startAlgo(self, multiName):
+        """启动算法"""
+        algo = self.algoDict[multiName]
+        algoActive = algo.start()
+        return algoActive
+    
+    #----------------------------------------------------------------------
+    def stopAlgo(self, multiName):
+        """停止算法"""
+        algo = self.algoDict[multiName]
+        algoActive = algo.stop()
+        return algoActive
+    
+    #----------------------------------------------------------------------
+    def getAllAlgoParams(self):
+        """获取所有算法的参数"""
+        return [algo.getAlgoParams() for algo in self.algoDict.values()]
+    
+    #----------------------------------------------------------------------
+    def setAlgoBuyPrice(self, multiName, buyPrice):
+        """设置算法买开价格"""
+        algo = self.algoDict[multiName]
+        algo.setBuyPrice(buyPrice)
+        
+    #----------------------------------------------------------------------
+    def setAlgoSellPrice(self, multiName, sellPrice):
+        """设置算法卖平价格"""
+        algo = self.algoDict.values()
+        algo.setSellPrice(sellPrice)
+        
+    #----------------------------------------------------------------------
+    def setAlgoShortPrice(self, multiName, shortPrice):
+        """设置算法空开价格"""
+        algo = self.algoDict[multiName]
+        algo.setShortPrice(shortPrice)
+        
+    #----------------------------------------------------------------------
+    def setAlgoCoverPrice(self, multiName, coverPrice):
+        """设置算法买平价格"""
+        algo = self.algoDict[multiName]
+        algo.setCoverPrice(coverPrice)
+        
+    #----------------------------------------------------------------------
+    def  setAlgoMode(self, multiName, mode):
+        """设置算法工作模式"""
+        algo = self.algoDict[multiName]
+        algo.setMode(mode)
+        
+    #----------------------------------------------------------------------
+    def setAlogMaxOrderSize(self, multiName, maxOrderSize):
+        """设置算法单笔委托限制"""
+        algo = self.algoDict[multiName]
+        algo.setMaxOrderSize(maxOrderSize)
+        
+    #----------------------------------------------------------------------
+    def setAlgoMaxPosSize(self, multiName, maxPosSize):
+        """设置算法持仓限制"""
+        algo = self.algoDict[multiName]
+        algo.setMaxPosSize(maxPosSize)       
+        
     
 ########################################################################
 class MultiEngine(object):
-    """"""
+    """组合引擎"""
 
     #----------------------------------------------------------------------
-    def __init__(self):
+    def __init__(self, mainEngine, eventEngine):
         """Constructor"""
-        pass
+        self.mainEngine = mainEngine
+        self.eventEngine = eventEngine
         
-    
+        self.dataEngine = MultiDataEngine(mainEngine, eventEngine)
+        self.algoEngine = MultiAlgoEngine(dataEngine, mainEngine, eventEngine)
+        
+    #----------------------------------------------------------------------
+    def init(self):
+        """初始化"""
+        self.dataEngine.loadSetting()
+        self.algoEngine.loadSetting()
+        
+    #----------------------------------------------------------------------
+    def stop(self):
+        """停止"""
+        self.dataEngine.saveSetting()
+        
+        self.algoEngine.stopAll()
+        self.algoEngine.saveSetting()
     
         
     
