@@ -4,6 +4,7 @@ import json
 import traceback
 import shelve
 from collections import OrderedDict
+from datetime import datetime
 
 from vnpy.event import Event
 from vnpy.trader.vtFunction import getJsonPath, getTempPath
@@ -20,6 +21,7 @@ from .multiBase import (MultiLeg, MultiMulti, EVENT_MULTITRADING_TICK,
                         EVENT_MULTITRADING_ALGO, EVENT_MULTITRADING_ALGOLOG)
 from .multiAlgo import SpreadOptionAlgo 
 
+EVENT_MULTITRADING_STOP = 'eMultiTradingStop'
 
 ########################################################################
 class MultiDataEngine(object):
@@ -99,7 +101,7 @@ class MultiDataEngine(object):
         activeLeg.payup = activeSetting['payup']
         
         multi.addActiveLeg(activeLeg) 
-        self.legDict[activeLeg.vtSymboll] = activeLeg
+        self.legDict[activeLeg.vtSymbol] = activeLeg
         self.vtSymbolMultiDict[activeLeg.vtSymbol] = multi
         
         self.subscribeMarketData(activeLeg.vtSymbol)
@@ -128,7 +130,7 @@ class MultiDataEngine(object):
         
         #返回结果
         result = True
-        msg = u'%组合创建成功' %multi.name
+        msg = u'%s组合创建成功' %multi.name
         return result, msg
     
     #----------------------------------------------------------------------
@@ -136,6 +138,7 @@ class MultiDataEngine(object):
         """处理行情推送"""
         # 检查行情是否需要处理
         tick = event.dict_['data']
+        print 'process tickEvent'
         if tick.vtSymbol not in self.legDict:
             return
         
@@ -169,6 +172,7 @@ class MultiDataEngine(object):
         """处理成交推送"""
         # 检查成交是否需要处理
         trade = event.dict_['data']
+        print 'process trade'
         if trade.vtSymbol not in self.legDict:
             return
         
@@ -201,6 +205,7 @@ class MultiDataEngine(object):
         """处理持仓推送"""
         # 检查持仓是否需要处理
         pos = event.dict_['data']
+        print 'process pos event'
         if pos.vtSymbol not in self.legDict:
             return
         
@@ -251,7 +256,6 @@ class MultiDataEngine(object):
         req = VtSubscribeReq()
         req.symbol = contract.symbol
         req.exchange = contract.exchange
-        
         self.mainEngine.subscribe(req, contract.gatewayName)
         
     #----------------------------------------------------------------------
@@ -259,6 +263,7 @@ class MultiDataEngine(object):
         """发出日志"""
         log = VtLogData()
         log.logContent = content
+        print content
         
         event = Event(EVENT_MULTITRADING_LOG)
         event.dict_['data'] = log
@@ -287,7 +292,7 @@ class MultiAlgoEngine(object):
         self.algoDict = OrderedDict()           # multiName:algo
         self.vtSymbolAlgoDict = {}              # vtSymbol:algo
         
-        self.registerEvent(self)
+        self.registerEvent()
         
     #----------------------------------------------------------------------
     def registerEvent(self):
@@ -474,7 +479,13 @@ class MultiAlgoEngine(object):
         """停止全部算法"""
         for algo in self.algoDict.values():
             algo.stop()
-            
+        
+    #----------------------------------------------------------------------
+    def startAll(self):
+        """启动全部算法"""
+        for algo in self.algoDict.values():
+            algo.start()            
+    
     #----------------------------------------------------------------------
     def startAlgo(self, multiName):
         """启动算法"""
@@ -548,13 +559,29 @@ class MultiEngine(object):
         self.eventEngine = eventEngine
         
         self.dataEngine = MultiDataEngine(mainEngine, eventEngine)
-        self.algoEngine = MultiAlgoEngine(dataEngine, mainEngine, eventEngine)
+        self.algoEngine = MultiAlgoEngine(self.dataEngine, mainEngine, eventEngine)
+        
+        self.eventEngine.register(EVENT_MULTITRADING_STOP, self.processStopEvent)
         
     #----------------------------------------------------------------------
     def init(self):
         """初始化"""
         self.dataEngine.loadSetting()
         self.algoEngine.loadSetting()
+        
+    #----------------------------------------------------------------------
+    def putStopEvent(self):
+        """推送组合引擎关闭事件"""
+        event = Event(type_=EVENT_MULTITRADING_STOP)
+        if datetime.now().strftime('%H:%M:%S') > '16:00:00':
+            self.eventEngine.put(event)
+        
+    #----------------------------------------------------------------------
+    def processStopEvent(self, event):
+        """处理组合引擎关闭事件"""
+        self.mainEngine.exit()
+        self.stop()
+        
         
     #----------------------------------------------------------------------
     def stop(self):

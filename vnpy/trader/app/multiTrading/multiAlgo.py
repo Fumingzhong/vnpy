@@ -1,10 +1,10 @@
 # encoding: UTF-8
-from math import floor
 from __future__ import division 
+from math import floor
 import sys
-sys.path.append('D:\pythonworkspace\codeFromZuo')
-sys.path.append('D:\pythonworkspace\marketMonitor')
-from SpreadOption import KrikMethod
+sys.path.append(r'D:\pythonworkspace\codeFromZuo')
+sys.path.append(r'D:\pythonworkspace\marketMonitor')
+from SpreadOption import KirkMethod
 from ZFMFunctions import ZfmFunctions
 from vnpy.trader.vtConstant import (EMPTY_INT, EMPTY_FLOAT, 
                                     EMPTY_STRING, EMPTY_UNICODE,
@@ -45,10 +45,14 @@ class MultiAlgoTemplate(object):
             self.writeLog(u'策略参数在类内赋值')
         # 算法参数初始化
         __d = self.__dict__
-        for (k,v) in self.algoParamsDict.items():
-            __d[k] = v
-        
-        self.__dict__ = __d
+        print self.algoParamsDict
+        if not self.algoParamsDict:
+            pass
+        else:
+            for (k,v) in self.algoParamsDict.items():
+                __d[k] = v
+            
+            self.__dict__ = __d
         
     #----------------------------------------------------------------------
     def updateMultiTick(self, multi):
@@ -104,7 +108,8 @@ class MultiAlgoTemplate(object):
     #----------------------------------------------------------------------
     def writeLog(self, content):
         """输出算法日志"""
-        prefix = ''.join([self.multiName, self.alogName])
+        print content
+        prefix = ''.join([self.multiName, self.algoName])
         content = ':'.join([prefix, content])
         self.algoEngine.writeLog(content)
         
@@ -121,14 +126,17 @@ class MultiAlgoTemplate(object):
         try:
             with open(self.algoParamsFilePath) as f:
                 l = json.load(f)
-                self.algoParamsDict = l.get(multi.name, {})
-                if not self.algoParamsDict:
-                    self.writeLog(u'文件无对应组合配置')
+                self.algoParamsDict = l.get(self.multi.name, {})
+                if not self.algoParamsDict and l:
+                    self.writeLog(u'文件无对应组合参数配置')
+                elif not l:
+                    self.writeLog(u'文件内容为空')
                 else:
-                    self.writeLog(u'组合配置加载完成')
+                    self.writeLog(u'组合参数配置加载完成')
         except:
-            content = u'组合配置加载出错，原因：' + traceback.format_exc()
+            content = u'组合参数配置加载出错，原因：' + traceback.format_exc()
             self.writeLog(content)
+        return self.algoParamsDict
     #----------------------------------------------------------------------
     def setAlgoParams(self, d):
         """设置算法参数"""
@@ -186,10 +194,10 @@ class SpreadOptionAlgo(MultiAlgoTemplate):
             return
         
         activeLeg = multi.activeLeg
-        passiveLeg = multi.passiveLeg[0] 
+        passiveLeg = multi.passiveLegs[0] 
         
-        # 处理tick中tickstart与tickend之间仍有成交的情况，
-        if multi.time > '14:59:00' & multi.time <= '14:59:30':
+        # 处理tick中tickstart与tickend之间仍有成交的情况
+        if multi.time[:-4] > '14:59:00' and multi.time[:-4] <= '14:59:30':
             self.cancelLegOrder(activeLeg.vtSymbol)
             self.cancelLegOrder(passiveLeg.vtSymbol)
             return        
@@ -216,8 +224,8 @@ class SpreadOptionAlgo(MultiAlgoTemplate):
         netPos1 = activeLeg.netPos
         netPos2 = passiveLeg.netPos
         
-        spreadCalculator = KrikMethod(s1, s2, K, r, T, sigma1, sigma2, rho, cp)
-        delta1, delta2 = spreadCalculator().OptionDelta()
+        spreadCalculator = KirkMethod(s1, s2, K, r, T, sigma1, sigma2, rho, cp)
+        delta1, delta2 = spreadCalculator.OptionDelta()
         
         if self.direction == 'short':
             delta1 = -delta1
@@ -225,8 +233,8 @@ class SpreadOptionAlgo(MultiAlgoTemplate):
         else:
             pass
         
-        contract1 = self.algoEngine.dataEngine.getContract(activeLeg.vtSymbol)
-        contract2 = self.algoEngine.dataEngine.getContract(passiveLeg.vtSymbol)
+        contract1 = self.algoEngine.mainEngine.getContract(activeLeg.vtSymbol)
+        contract2 = self.algoEngine.mainEngine.getContract(passiveLeg.vtSymbol)
         
         # 计算应建仓数量
         newNetPos1 = int(round(delta1 * amount / contract1.size, 0)) 
@@ -255,8 +263,13 @@ class SpreadOptionAlgo(MultiAlgoTemplate):
         elif activeAdjustVolume and abs(newNetPos1) < abs(netPos1):
             activeOffset = OFFSET_CLOSE
             
-        self.sendLegOrder(activeVtSymbol, activeDirection, activeOffset, activePrice, 
-                         activeVolume)
+        # 排除不需要调仓的情况
+        if not activeVolume:
+            pass
+        else:
+            print activeVtSymbol, activeDirection, activeOffset, activePrice, activeVolume
+            self.sendLegOrder(activeVtSymbol, activeDirection, activeOffset, activePrice, 
+                             activeVolume)
             
         # 被动腿下单参数
         passiveVtSymbol = passiveLeg.vtSymbol
@@ -276,9 +289,13 @@ class SpreadOptionAlgo(MultiAlgoTemplate):
             passiveOffset = OFFSET_OPEN
         elif passiveAdjustVolume and abs(newNetPos2) < abs(netPos2):
             passiveOffset = OFFSET_CLOSE
-            
-        self.sendLegOrder(passiveVtSymbol, passiveDirection, passiveOffset, passivePrice, 
-                         passiveVolume)
+        
+        if not passiveVolume:
+            pass
+        else:
+            print passiveVtSymbol, passiveDirection, passiveOffset, passivePrice, passiveVolume
+            self.sendLegOrder(passiveVtSymbol, passiveDirection, passiveOffset, passivePrice, 
+                             passiveVolume)
         
     #----------------------------------------------------------------------
     def updateMultiPos(self, multi):
@@ -327,7 +344,7 @@ class SpreadOptionAlgo(MultiAlgoTemplate):
             legVtSymbol = order.vtSymbol
             legDirection = order.direction
             legOffset = order.offset
-            contract = self.algoEngine.dataEngine.getContract(legVtsymbol)
+            contract = self.algoEngine.mainEngine.getContract(legVtSymbol)
             leg = self.legDict[legVtSymbol]
             if legDirection == DIRECTION_LONG:
                 legPrice = order.price + leg.payup * contract.priceTick
@@ -336,8 +353,18 @@ class SpreadOptionAlgo(MultiAlgoTemplate):
                 
             legVolume = order.totalVolume
             
-            self.sendLegOrder(legVtSymbol, legDirection, legOffset, legPrice, 
-                             legVolume)
+            #print legVtSymbol, legDirection, legOffset, legPrice, legVolume
+            if not legVolume:
+                pass
+            else:
+                self.sendLegOrder(legVtSymbol, legDirection, legOffset, legPrice, 
+                                 legVolume)
+            
+    #----------------------------------------------------------------------
+    def updateTimer(self):
+        """计时更新"""
+        pass
+        
             
     #----------------------------------------------------------------------
     def start(self):
@@ -374,7 +401,7 @@ class SpreadOptionAlgo(MultiAlgoTemplate):
         if legVtSymbol not in self.legOrderDict:
             self.legOrderDict[legVtSymbol] = legOrderList
         else:
-            self.legOrderDict.extend(legOrderList)
+            self.legOrderDict[legVtSymbol].extend(legOrderList)
             
             
     #----------------------------------------------------------------------
@@ -383,7 +410,7 @@ class SpreadOptionAlgo(MultiAlgoTemplate):
         pass
     
     #----------------------------------------------------------------------
-    def newPassiveLegTrade(self):
+    def newPassiveLegTrade(self, vtSymbol, direction, volume):
         """新的被动腿成交"""
         pass
         
