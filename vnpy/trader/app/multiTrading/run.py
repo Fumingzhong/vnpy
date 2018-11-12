@@ -25,6 +25,7 @@ from vnpy.trader.gateway import ctpGateway
 
 sys.path.append(r'C:\vnpy\vnpy\trader\app')
 from multiTrading.multiEngine import MultiDataEngine, MultiAlgoEngine, MultiEngine
+from time import sleep
 
 #----------------------------------------------------------------------
 def main():

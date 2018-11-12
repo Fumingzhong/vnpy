@@ -42,6 +42,8 @@ class MultiDataEngine(object):
         
         self.registerEvent()
         
+        self.startTime = datetime.now().strftime('%H:%M:%S')
+        
     #----------------------------------------------------------------------
     def loadSetting(self):
         """加载配置"""
@@ -138,16 +140,18 @@ class MultiDataEngine(object):
         """处理行情推送"""
         # 检查行情是否需要处理
         tick = event.dict_['data']
-        print 'process tickEvent'
         if tick.vtSymbol not in self.legDict:
             return
-        
+        print 'process tickEvent'
         # 更新腿价格
         leg = self.legDict[tick.vtSymbol]
         leg.bidPrice = tick.bidPrice1
         leg.askPrice = tick.askPrice1
         leg.bidVolume = tick.bidVolume1
         leg.askVolume = tick.askVolume1
+        
+
+        print str(leg.bidPrice)+leg.vtSymbol
         
         # 更新组合价格
         multi = self.vtSymbolMultiDict[tick.vtSymbol]
@@ -172,6 +176,11 @@ class MultiDataEngine(object):
         """处理成交推送"""
         # 检查成交是否需要处理
         trade = event.dict_['data']
+        tradeT = trade.tradeTime
+        
+        # 排除之前的成交单
+        if tradeT < self.startTime:
+            return
         print 'process trade'
         if trade.vtSymbol not in self.legDict:
             return
@@ -192,6 +201,7 @@ class MultiDataEngine(object):
             else:
                 leg.longPos -= trade.volume
         leg.netPos = leg.longPos - leg.shortPos
+        print str(leg.netPos)+trade.vtSymbol+'longPos:'+str(leg.longPos)+'shortPos:'+str(leg.shortPos)+'tradeVolume:'+str(trade.volume)
         
         # 更新价差持仓
         multi = self.vtSymbolMultiDict[trade.vtSymbol]
@@ -205,7 +215,8 @@ class MultiDataEngine(object):
         """处理持仓推送"""
         # 检查持仓是否需要处理
         pos = event.dict_['data']
-        print 'process pos event'
+        nowStr = datetime.now().strftime('%H:%M:%S')
+        print 'process pos event'+nowStr
         if pos.vtSymbol not in self.legDict:
             return
         
@@ -217,7 +228,7 @@ class MultiDataEngine(object):
             leg.longPos = pos.position
         else:
             leg.shortPos = pos.position 
-        leg.netPos = leg.longPos - leg.shortPos         # 有疑问
+        leg.netPos = leg.longPos - leg.shortPos         # 无疑问
         
         # 更新组合持仓
         multi = self.vtSymbolMultiDict[pos.vtSymbol]
@@ -423,7 +434,7 @@ class MultiAlgoEngine(object):
     #----------------------------------------------------------------------
     def putAlgoEvent(self, algo):
         """发出算法状态更新事件"""
-        event = Event(EVENT_MULTITRADING_ALGO + algo.name)          #algo.name是否应为algo.spreadName
+        event = Event(EVENT_MULTITRADING_ALGO + algo.algoName)          #algo.name是否应为algo.spreadName
         self.eventEngine.put(event)
         
     #----------------------------------------------------------------------
@@ -447,7 +458,6 @@ class MultiAlgoEngine(object):
         f = shelve.open(self.algoFilePath)
         f['setting'] = setting
         f.close()
-        
     #----------------------------------------------------------------------
     def loadSetting(self):
         """加载算法配置"""
@@ -561,26 +571,26 @@ class MultiEngine(object):
         self.dataEngine = MultiDataEngine(mainEngine, eventEngine)
         self.algoEngine = MultiAlgoEngine(self.dataEngine, mainEngine, eventEngine)
         
-        self.eventEngine.register(EVENT_MULTITRADING_STOP, self.processStopEvent)
+        self.eventEngine.register(EVENT_TIMER, self.processStopEvent)
+        
+        # 主引擎开关
+        self.active = True
         
     #----------------------------------------------------------------------
     def init(self):
         """初始化"""
         self.dataEngine.loadSetting()
         self.algoEngine.loadSetting()
-        
-    #----------------------------------------------------------------------
-    def putStopEvent(self):
-        """推送组合引擎关闭事件"""
-        event = Event(type_=EVENT_MULTITRADING_STOP)
-        if datetime.now().strftime('%H:%M:%S') > '16:00:00':
-            self.eventEngine.put(event)
+        self.algoEngine.startAll()
         
     #----------------------------------------------------------------------
     def processStopEvent(self, event):
         """处理组合引擎关闭事件"""
-        self.mainEngine.exit()
-        self.stop()
+        nowStr = datetime.now().strftime('%H:%M:%S')
+        if not self.active:
+            return        
+        if nowStr > '18:00:00':
+            self.stop()
         
         
     #----------------------------------------------------------------------
@@ -590,6 +600,7 @@ class MultiEngine(object):
         
         self.algoEngine.stopAll()
         self.algoEngine.saveSetting()
+        self.active = False
     
         
     

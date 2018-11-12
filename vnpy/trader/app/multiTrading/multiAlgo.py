@@ -35,8 +35,8 @@ class MultiAlgoTemplate(object):
         self.algoName = EMPTY_STRING                # 算法名称
         self.active = False                         # 工作状态
         
-        self.maxPosSize = EMPTY_INT                 # 最大单边持仓
-        self.maxOrderSize = EMPTY_INT               # 最大单笔委托量
+        self.maxPosSize = EMPTY_INT                 # 最大单边持仓         # 未用到
+        self.maxOrderSize = EMPTY_INT               # 最大单笔委托量       # 未用到
         
         #如果有文件则加载文件中的参数，无的话则在策略中输入
         try:
@@ -45,7 +45,6 @@ class MultiAlgoTemplate(object):
             self.writeLog(u'策略参数在类内赋值')
         # 算法参数初始化
         __d = self.__dict__
-        print self.algoParamsDict
         if not self.algoParamsDict:
             pass
         else:
@@ -116,7 +115,7 @@ class MultiAlgoTemplate(object):
     #----------------------------------------------------------------------
     def getAlgoParams(self):
         """获得算法参数"""
-        d = self.__dict__
+        d = self.algoParamsDict
         return d
     
     
@@ -140,18 +139,7 @@ class MultiAlgoTemplate(object):
     #----------------------------------------------------------------------
     def setAlgoParams(self, d):
         """设置算法参数"""
-        pass
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
+        pass          
         
     
 ########################################################################
@@ -174,10 +162,33 @@ class SpreadOptionAlgo(MultiAlgoTemplate):
         for leg in multi.passiveLegs:
             self.legDict[leg.vtSymbol] = leg
         
-        self.activeTaskDict = {}                                    # 主动腿需要下单的数量字典  vtSymbol:volume    
-        self.hedgingTaskDict = {}                                   # 被动腿需要对冲的数量字典  vtSymbol:volume
+        self.activeTaskDict = {}                                    # 主动腿需要下单的数量字典  vtSymbol:volume    # 未用到
+        self.hedgingTaskDict = {}                                   # 被动腿需要对冲的数量字典  vtSymbol:volume    # 未用到
         self.legOrderDict = {}                                      # vtSymbol: list of vtOrderID
         self.orderTradeDict = {}                                    # vtOrderID: tradedVolume 
+        
+        # 加载策略参数
+        self.d = self.algoParamsDict
+        
+        self.K = self.d['K']
+        self.r = self.d['r']
+        self.endDate = self.d['endDate']
+        self.startDate = date.today().strftime('%Y-%m-%d')
+        self.T = round(len(ZfmFunctions().getTradeDays(self.startDate, self.endDate))/252,3)   # 剩余时间年化
+        self.sigma1 = self.d['sigma1']
+        self.sigma2 = self.d['sigma2']
+        self.rho = self.d['rho']
+        self.cp = self.d['cp']
+        self.amount = self.d['amount']
+        self.bandWidth = self.d['bandWidth']
+        self.ratio = self.d['ratio']
+        
+        # 加载合约信息
+        self.activeLeg = multi.activeLeg
+        self.passiveLeg = multi.passiveLegs[0]
+        
+        self.contract1 = self.algoEngine.mainEngine.getContract(self.activeLeg.vtSymbol)
+        self.contract2 = self.algoEngine.mainEngine.getContract(self.passiveLeg.vtSymbol)
         
     #----------------------------------------------------------------------
     def updateMultiTick(self, multi):
@@ -193,6 +204,12 @@ class SpreadOptionAlgo(MultiAlgoTemplate):
             self.legOrderDict[self.activeVtSymbol]):
             return
         
+        # 若当前已有被动腿委托则直接返回
+        passiveVtSymbol = self.multi.passiveLegs[0].vtSymbol
+        if (passiveVtSymbol in self.legOrderDict and
+            self.legOrderDict[passiveVtSymbol]):
+            return    
+        
         activeLeg = multi.activeLeg
         passiveLeg = multi.passiveLegs[0] 
         
@@ -202,30 +219,20 @@ class SpreadOptionAlgo(MultiAlgoTemplate):
             self.cancelLegOrder(passiveLeg.vtSymbol)
             return        
         
-        # 加载策略所有参数
-        d = self.algoParamsDict
-        
         s1 = activeLeg.bidPrice 
-        s2 = passiveLeg.bidPrice
-        K = d['K']
-        r = d['r']
-        
-        # 将截止日期转化成剩余时间长度
-        endDate = d['endDate']
-        startDate = date.today().strftime('%Y-%m-%d')
-        T = round(len(ZfmFunctions().getTradeDays(startDate, endDate))/252,3)   # 剩余时间年化
-        sigma1 = d['sigma1']
-        sigma2 = d['sigma2']
-        rho = d['rho']
-        cp = d['cp']
-        amount = d['amount']
+        s2 = passiveLeg.bidPrice * self.ratio
+
+        #print s1, s2
         
         # 获得腿的净持仓
         netPos1 = activeLeg.netPos
         netPos2 = passiveLeg.netPos
+        print netPos1, netPos2
         
-        spreadCalculator = KirkMethod(s1, s2, K, r, T, sigma1, sigma2, rho, cp)
+        spreadCalculator = KirkMethod(s1, s2, self.K, self.r, self.T, self.sigma1, self.sigma2, self.rho, self.cp)
         delta1, delta2 = spreadCalculator.OptionDelta()
+        gamma1, gamma2 = spreadCalculator.OptionGamma()
+        print str(delta1)+activeLeg.vtSymbol, str(delta2)+passiveLeg.vtSymbol
         
         if self.direction == 'short':
             delta1 = -delta1
@@ -233,12 +240,17 @@ class SpreadOptionAlgo(MultiAlgoTemplate):
         else:
             pass
         
-        contract1 = self.algoEngine.mainEngine.getContract(activeLeg.vtSymbol)
-        contract2 = self.algoEngine.mainEngine.getContract(passiveLeg.vtSymbol)
+        ## 计算调仓的gamma最小值手数
+        #minGamma1 = int(round(gamma1 * s1 * amount/contract1.size,0))
+        #minGamma2 = int(round(gamma2 * s2 * amount/contract2.size,0))
+        
+        ## 计算总的手数
+        #nUnit1 = int(round(amount/contract1.size,0))
+        #nUnit2 = int(round(amount/contract2.size,0))
         
         # 计算应建仓数量
-        newNetPos1 = int(round(delta1 * amount / contract1.size, 0)) 
-        newNetPos2 = int(round(delta2 * amount / contract2.size, 0))
+        newNetPos1 = int(round(delta1 * self.amount / self.contract1.size, 0)) 
+        newNetPos2 = int(round(delta2 * self.amount * self.ratio / self.contract2.size, 0))
         
         # 计算主动腿和被动腿委托量
         activeAdjustVolume = newNetPos1 - netPos1
@@ -249,58 +261,209 @@ class SpreadOptionAlgo(MultiAlgoTemplate):
         activeDirection = EMPTY_STRING
         activeOffset = EMPTY_STRING
         activePrice = EMPTY_FLOAT
-        activeVolume = abs(activeAdjustVolume)
         
-        if activeAdjustVolume > 0:
+        if activeAdjustVolume > 0 and abs(activeAdjustVolume) > self.bandWidth * abs(netPos1):
             activeDirection = DIRECTION_LONG
-            activePrice = activeLeg.askPrice + activeLeg.payup * contract1.priceTick
-        elif activeAdjustVolume < 0:
+            activePrice = activeLeg.askPrice + activeLeg.payup * self.contract1.priceTick
+        elif activeAdjustVolume < 0 and abs(activeAdjustVolume) > self.bandWidth * abs(netPos1):
             activeDirection = DIRECTION_SHORT
-            activePrice = activeLeg.bidPrice  - activeLeg.payup * contract1.priceTick
+            activePrice = activeLeg.bidPrice  - activeLeg.payup * self.contract1.priceTick
             
-        if activeAdjustVolume and abs(newNetPos1) > abs(netPos1):
-            activeOffset = OFFSET_OPEN
-        elif activeAdjustVolume and abs(newNetPos1) < abs(netPos1):
-            activeOffset = OFFSET_CLOSE
+            
+        activeOffsetList, activeVolumeList = self.calculateOffsetAndVolume(activeAdjustVolume, newNetPos1, netPos1)
             
         # 排除不需要调仓的情况
-        if not activeVolume:
+        if not activePrice:
             pass
         else:
-            print activeVtSymbol, activeDirection, activeOffset, activePrice, activeVolume
-            self.sendLegOrder(activeVtSymbol, activeDirection, activeOffset, activePrice, 
-                             activeVolume)
+            for i in range(len(activeOffsetList)):
+                activeOffset = activeOffsetList[i]
+                activeVolume = activeVolumeList[i]
+                print activeVtSymbol, activeDirection, activeOffset, activePrice, activeVolume
+                self.sendLegOrder(activeVtSymbol, activeDirection, activeOffset, activePrice, 
+                                 activeVolume)
             
         # 被动腿下单参数
         passiveVtSymbol = passiveLeg.vtSymbol
         passiveDirection = EMPTY_STRING
         passiveOffset = EMPTY_STRING
         passivePrice = EMPTY_FLOAT
-        passiveVolume = abs(passiveAdjustVolume)
         
-        if passiveAdjustVolume > 0:
+        if passiveAdjustVolume > 0 and abs(passiveAdjustVolume) > self.bandWidth * abs(netPos2):
             passiveDirection = DIRECTION_LONG
-            passivePrice = passiveLeg.askPrice + passiveLeg.payup * contract2.priceTick
-        elif passiveAdjustVolume < 0:
+            passivePrice = passiveLeg.askPrice + passiveLeg.payup * self.contract2.priceTick
+        elif passiveAdjustVolume < 0 and abs(passiveAdjustVolume) > self.bandWidth * abs(netPos2):
             passiveDirection = DIRECTION_SHORT
-            passivePrice = passiveLeg.bidPrice - passiveLeg.payup * contract2.priceTick
+            passivePrice = passiveLeg.bidPrice - passiveLeg.payup * self.contract2.priceTick
             
-        if passiveAdjustVolume and abs(newNetPos2) > abs(netPos2):
-            passiveOffset = OFFSET_OPEN
-        elif passiveAdjustVolume and abs(newNetPos2) < abs(netPos2):
-            passiveOffset = OFFSET_CLOSE
+        passiveOffsetList, passiveVolumeList = self.calculateOffsetAndVolume(passiveAdjustVolume, newNetPos2, netPos2)
         
-        if not passiveVolume:
+        if not passivePrice:
             pass
         else:
-            print passiveVtSymbol, passiveDirection, passiveOffset, passivePrice, passiveVolume
-            self.sendLegOrder(passiveVtSymbol, passiveDirection, passiveOffset, passivePrice, 
-                             passiveVolume)
+            for i in range(len(passiveOffsetList)):
+                passiveOffset = passiveOffsetList[i]
+                passiveVolume = passiveVolumeList[i]
+                print passiveVtSymbol, passiveDirection, passiveOffset, passivePrice, passiveVolume
+                self.sendLegOrder(passiveVtSymbol, passiveDirection, passiveOffset, passivePrice, 
+                                 passiveVolume)
+    
+    #----------------------------------------------------------------------
+    def calculateOffsetAndVolume(self, adjustVolume, newPos, pos):
+        """计算下单方向和量"""
+        offsetList = []
+        volumeList = []
         
+        prod = newPos * pos
+        if not adjustVolume:
+            pass
+        else:
+            if prod > 0:
+                if abs(newPos) > abs(pos):
+                    tempOffset = OFFSET_OPEN
+                    tempVolume = abs(adjustVolume)
+                else:
+                    tempOffset = OFFSET_CLOSE
+                    tempVolume = abs(adjustVolume)
+                offsetList.append(tempOffset)
+                volumeList.append(tempVolume)
+            elif prod < 0:
+                tempOffsetList = [OFFSET_CLOSE, OFFSET_OPEN]
+                tempVolumeList = [abs(pos), abs(newPos)]
+                offsetList.extend(tempOffsetList)
+                volumeList.extend(tempVolumeList)
+            else:
+                if not pos:
+                    tempOffset = OFFSET_OPEN
+                    tempVolume = abs(newPos)
+                else:
+                    tempOffset = OFFSET_CLOSE
+                    tempVolume = abs(pos)
+                    
+                offsetList.append(tempOffset)
+                volumeList.append(tempVolume)   
+        
+        return offsetList, volumeList
+                            
     #----------------------------------------------------------------------
     def updateMultiPos(self, multi):
         """价差持仓更新"""
         self.multi = multi
+        # 若算法没有启动则直接返回
+        if not self.active:
+            return
+        
+        # 若当前已有主动腿委托则直接返回
+        if (self.activeVtSymbol in self.legOrderDict and
+            self.legOrderDict[self.activeVtSymbol]):
+            return
+        
+        # 若当前已有被动腿委托则直接返回
+        passiveVtSymbol = self.multi.passiveLegs[0].vtSymbol
+        if (passiveVtSymbol in self.legOrderDict and
+            self.legOrderDict[passiveVtSymbol]):
+            return    
+        
+        activeLeg = multi.activeLeg
+        passiveLeg = multi.passiveLegs[0] 
+        
+        if not activeLeg.bidPrice or not activeLeg.askPrice or not passiveLeg.bidPrice or not passiveLeg.askPrice:
+            return
+        
+        # 处理tick中tickstart与tickend之间仍有成交的情况
+        if multi.time[:-4] > '14:59:00' and multi.time[:-4] <= '14:59:30':
+            self.cancelLegOrder(activeLeg.vtSymbol)
+            self.cancelLegOrder(passiveLeg.vtSymbol)
+            return        
+        
+        
+        s1 = activeLeg.bidPrice 
+        s2 = passiveLeg.bidPrice * self.ratio
+
+        #print s1, s2
+                
+        # 获得腿的净持仓
+        netPos1 = activeLeg.netPos
+        netPos2 = passiveLeg.netPos
+        print netPos1, netPos2
+        
+        spreadCalculator = KirkMethod(s1, s2, self.K, self.r, self.T, self.sigma1, self.sigma2, self.rho, self.cp)
+        delta1, delta2 = spreadCalculator.OptionDelta()
+        gamma1, gamma2 = spreadCalculator.OptionGamma()
+        print str(delta1)+activeLeg.vtSymbol, str(delta2)+passiveLeg.vtSymbol
+        
+        if self.direction == 'short':
+            delta1 = -delta1
+            delta2 = -delta2
+        else:
+            pass
+        
+        
+        ## 计算调仓的gamma最小值手数
+        #minGamma1 = int(round(gamma1 * s1 * amount/contract1.size,0))
+        #minGamma2 = int(round(gamma2 * s2 * amount/contract2.size,0))
+        
+        ## 计算总的手数
+        #nUnit1 = int(round(amount/contract1.size,0))
+        #nUnit2 = int(round(amount/contract2.size,0))
+        
+        # 计算应建仓数量
+        newNetPos1 = int(round(delta1 * self.amount / self.contract1.size, 0)) 
+        newNetPos2 = int(round(delta2 * self.amount * self.ratio / self.contract2.size, 0))
+        
+        # 计算主动腿和被动腿委托量
+        activeAdjustVolume = newNetPos1 - netPos1
+        passiveAdjustVolume = newNetPos2 - netPos2
+        
+        # 主动腿下单参数
+        activeVtSymbol = activeLeg.vtSymbol
+        activeDirection = EMPTY_STRING
+        activeOffset = EMPTY_STRING
+        activePrice = EMPTY_FLOAT
+        
+        if activeAdjustVolume > 0 and abs(activeAdjustVolume) > self.bandWidth * abs(netPos1):
+            activeDirection = DIRECTION_LONG
+            activePrice = activeLeg.askPrice + activeLeg.payup * self.contract1.priceTick
+        elif activeAdjustVolume < 0 and abs(activeAdjustVolume) > self.bandWidth * abs(netPos1):
+            activeDirection = DIRECTION_SHORT
+            activePrice = activeLeg.bidPrice  - activeLeg.payup * self.contract1.priceTick
+            
+        activeOffsetList, activeVolumeList = self.calculateOffsetAndVolume(activeAdjustVolume, newNetPos1, netPos1)            
+            
+        # 排除不需要调仓的情况
+        if not activePrice:
+            pass
+        else:
+            for i in range(len(activeOffsetList)):
+                activeOffset = activeOffsetList[i]
+                activeVolume = activeVolumeList[i]
+                print activeVtSymbol, activeDirection, activeOffset, activePrice, activeVolume
+                self.sendLegOrder(activeVtSymbol, activeDirection, activeOffset, activePrice, 
+                                 activeVolume)
+            
+        # 被动腿下单参数
+        passiveVtSymbol = passiveLeg.vtSymbol
+        passiveDirection = EMPTY_STRING
+        passiveOffset = EMPTY_STRING
+        passivePrice = EMPTY_FLOAT
+        
+        if passiveAdjustVolume > 0 and abs(passiveAdjustVolume) > self.bandWidth * abs(netPos2):
+            passiveDirection = DIRECTION_LONG
+            passivePrice = passiveLeg.askPrice + passiveLeg.payup * self.contract2.priceTick
+        elif passiveAdjustVolume < 0 and abs(passiveAdjustVolume) > self.bandWidth * abs(netPos2):
+            passiveDirection = DIRECTION_SHORT
+            passivePrice = passiveLeg.bidPrice - passiveLeg.payup * self.contract2.priceTick
+            
+        passiveOffsetList, passiveVolumeList = self.calculateOffsetAndVolume(passiveAdjustVolume, newNetPos2, netPos2)        
+        if not passivePrice:
+            pass
+        else:
+            for i in range(len(passiveOffsetList)):
+                passiveOffset = passiveOffsetList[i]
+                passiveVolume = passiveVolumeList[i]
+                print passiveVtSymbol, passiveDirection, passiveOffset, passivePrice, passiveVolume
+                self.sendLegOrder(passiveVtSymbol, passiveDirection, passiveOffset, passivePrice, 
+                                 passiveVolume)   
         
     #----------------------------------------------------------------------
     def updateTrade(self, trade):
@@ -340,7 +503,7 @@ class SpreadOptionAlgo(MultiAlgoTemplate):
                 orderList.remove(vtOrderID)
                 
         # 如果出现撤单或者被拒单重新发单       
-        if order.status in self.FINISHED_STATUS[1:]:
+        if order.status == STATUS_CANCELLED:
             legVtSymbol = order.vtSymbol
             legDirection = order.direction
             legOffset = order.offset
@@ -353,7 +516,7 @@ class SpreadOptionAlgo(MultiAlgoTemplate):
                 
             legVolume = order.totalVolume
             
-            #print legVtSymbol, legDirection, legOffset, legPrice, legVolume
+            print legVtSymbol, legDirection, legOffset, legPrice, legVolume
             if not legVolume:
                 pass
             else:
