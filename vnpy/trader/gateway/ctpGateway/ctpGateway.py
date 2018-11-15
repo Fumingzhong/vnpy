@@ -489,6 +489,8 @@ class CtpTdApi(TdApi):
 
         self.requireAuthentication = False
         
+        self.isPosChecked = False           # 是否查询过持仓
+        
     #----------------------------------------------------------------------
     def onFrontConnected(self):
         """服务器连接"""
@@ -705,6 +707,7 @@ class CtpTdApi(TdApi):
     #----------------------------------------------------------------------
     def onRspQryInvestorPosition(self, data, error, n, last):
         """持仓查询回报"""
+        self.isPosChecked = True
         if not data['InstrumentID']:
             return
         

@@ -21,8 +21,6 @@ from .multiBase import (MultiLeg, MultiMulti, EVENT_MULTITRADING_TICK,
                         EVENT_MULTITRADING_ALGO, EVENT_MULTITRADING_ALGOLOG)
 from .multiAlgo import SpreadOptionAlgo 
 
-EVENT_MULTITRADING_STOP = 'eMultiTradingStop'
-
 ########################################################################
 class MultiDataEngine(object):
     """多标的数据计算引擎"""
@@ -142,7 +140,7 @@ class MultiDataEngine(object):
         tick = event.dict_['data']
         if tick.vtSymbol not in self.legDict:
             return
-        print 'process tickEvent'
+        #print 'process tickEvent'
         # 更新腿价格
         leg = self.legDict[tick.vtSymbol]
         leg.bidPrice = tick.bidPrice1
@@ -151,7 +149,7 @@ class MultiDataEngine(object):
         leg.askVolume = tick.askVolume1
         
 
-        print str(leg.bidPrice)+leg.vtSymbol
+        #print str(leg.bidPrice)+leg.vtSymbol
         
         # 更新组合价格
         multi = self.vtSymbolMultiDict[tick.vtSymbol]
@@ -181,7 +179,7 @@ class MultiDataEngine(object):
         # 排除之前的成交单
         if tradeT < self.startTime:
             return
-        print 'process trade'
+        #print 'process trade'
         if trade.vtSymbol not in self.legDict:
             return
         
@@ -201,7 +199,7 @@ class MultiDataEngine(object):
             else:
                 leg.longPos -= trade.volume
         leg.netPos = leg.longPos - leg.shortPos
-        print str(leg.netPos)+trade.vtSymbol+'longPos:'+str(leg.longPos)+'shortPos:'+str(leg.shortPos)+'tradeVolume:'+str(trade.volume)
+        #print str(leg.netPos)+trade.vtSymbol+'longPos:'+str(leg.longPos)+'shortPos:'+str(leg.shortPos)+'tradeVolume:'+str(trade.volume)
         
         # 更新价差持仓
         multi = self.vtSymbolMultiDict[trade.vtSymbol]
@@ -216,7 +214,7 @@ class MultiDataEngine(object):
         # 检查持仓是否需要处理
         pos = event.dict_['data']
         nowStr = datetime.now().strftime('%H:%M:%S')
-        print 'process pos event'+nowStr
+        #print 'process pos event'+nowStr
         if pos.vtSymbol not in self.legDict:
             return
         
@@ -274,7 +272,7 @@ class MultiDataEngine(object):
         """发出日志"""
         log = VtLogData()
         log.logContent = content
-        print content
+        #print content
         
         event = Event(EVENT_MULTITRADING_LOG)
         event.dict_['data'] = log

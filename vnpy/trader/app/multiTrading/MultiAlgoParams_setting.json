@@ -28,46 +28,21 @@
 		    "bandWidth":0.1,
 		    "ratio":0.15
                 
-                },		
-    "IF.11-12":
-                {
-                    "K": 200,
-                    "r": 0.035,
-                    "endDate": "2018-12-29",
-                    "sigma1": 0.3,
-                    "sigma2": 0.3,
-                    "rho": 0.6,
-                    "cp": 1,
-		    "direction": "short",
-		    "amount": 200
-                
                 },
-    "IH.11-12":
+    "ccs.01-01":
                 {
-                    "K": 200,
+                    "K": -480,
                     "r": 0.035,
-                    "endDate": "2018-12-29",
-                    "sigma1": 0.3,
-                    "sigma2": 0.3,
-                    "rho": 0.6,
+                    "endDate": "2018-11-31",
+                    "sigma1": 0.0913,
+                    "sigma2": 0.0886,
+                    "rho": 0.7012,
                     "cp": 1,
-		    "direction": "short",
-		    "amount": 200
-                
-                },
-    "IC.11-12":
-                {
-                    "K": 200,
-                    "r": 0.035,
-                    "endDate": "2018-12-29",
-                    "sigma1": 0.3,
-                    "sigma2": 0.3,
-                    "rho": 0.6,
-                    "cp": 1,
-		    "direction": "short",
-		    "amount": 200
+		    "direction": "long",
+		    "amount": 1600,
+		    "bandWidth":0.1,
+		    "ratio":1
                 
                 }
-		
 
 }

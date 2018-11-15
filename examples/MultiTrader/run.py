@@ -29,7 +29,6 @@ from vnpy.event import Event,EVENT_TIMER
 from datetime import datetime
 from time import sleep
 import multiTrading
-import threading
 
 ########################################################################
 class CloseEventEngine(QtCore.QObject):
@@ -49,7 +48,7 @@ class CloseEventEngine(QtCore.QObject):
     def processStopEvent(self):
         """关闭事件引擎"""
         nowStr = datetime.now().strftime('%H:%M:%S')     
-        if nowStr > '15:00:00':
+        if nowStr > '19:00:00':
             self.mainEngine.exit()
             print u'退出主引擎'
             self.mainEngine.writeLog(u'退出主引擎')
@@ -72,25 +71,23 @@ def main():
     # 添加交易接口
     me.addGateway(ctpGateway)    
     
+    # 添加应用
+    me.addApp(multiTrading)    
     # 交易接口连接
     me.connect(ctpGateway.gatewayName)
     
     # 引擎开始前需要查询一次合约
     gateway = me.getGateway(ctpGateway.gatewayName)
     tdApi = gateway.tdApi
-    tdApi.reqID += 1
-    tdApi.reqQryInstrument({}, tdApi.reqID)  
     
     # 等到查询持仓情况
     while True:
         if not tdApi.symbolSizeDict:
-            sleep(1)
+            sleep(0.5)
             print 'sleep to wait for reqQryInstrument to finish!'
         else:
             print 'reqQryInstrument finished!'
-            break
-    # 添加应用
-    me.addApp(multiTrading)    
+            break    
     # 组合模块
     multiEngine = me.appDict[multiTrading.appName]
     multiEngine.init()

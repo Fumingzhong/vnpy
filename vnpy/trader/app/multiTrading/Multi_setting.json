@@ -39,5 +39,26 @@
                 "payup": 2
             }
         ]
-    }    
+    },
+    
+    {
+        "name": "ccs.01-01",
+
+        "activeLeg": 
+            {
+                "vtSymbol": "c1901",
+                "ratio": 1,
+                "multiplier": 1.0,
+                "payup": 2
+            },
+
+        "passiveLegs": [
+            {
+                "vtSymbol": "cs1901",
+                "ratio": -1,
+                "multiplier": -1,
+                "payup": 2
+            }
+        ]
+    }      
 ]

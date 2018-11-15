@@ -107,7 +107,6 @@ class MultiAlgoTemplate(object):
     #----------------------------------------------------------------------
     def writeLog(self, content):
         """输出算法日志"""
-        print content
         prefix = ''.join([self.multiName, self.algoName])
         content = ':'.join([prefix, content])
         self.algoEngine.writeLog(content)
@@ -174,7 +173,7 @@ class SpreadOptionAlgo(MultiAlgoTemplate):
         self.r = self.d['r']
         self.endDate = self.d['endDate']
         self.startDate = date.today().strftime('%Y-%m-%d')
-        self.T = round(len(ZfmFunctions().getTradeDays(self.startDate, self.endDate))/252,3)   # 剩余时间年化
+        self.T = len(ZfmFunctions().getTradeDays(self.startDate, self.endDate))   # 在spreadOption中年化
         self.sigma1 = self.d['sigma1']
         self.sigma2 = self.d['sigma2']
         self.rho = self.d['rho']
@@ -190,10 +189,12 @@ class SpreadOptionAlgo(MultiAlgoTemplate):
         self.contract1 = self.algoEngine.mainEngine.getContract(self.activeLeg.vtSymbol)
         self.contract2 = self.algoEngine.mainEngine.getContract(self.passiveLeg.vtSymbol)
         
+        
     #----------------------------------------------------------------------
     def updateMultiTick(self, multi):
         """组合行情更新"""
         self.multi = multi
+        isPosChecked = self.algoEngine.mainEngine.getGateway(self.contract1.gatewayName).tdApi.isPosChecked
         
         # 若算法没有启动则直接返回
         if not self.active:
@@ -210,6 +211,8 @@ class SpreadOptionAlgo(MultiAlgoTemplate):
             self.legOrderDict[passiveVtSymbol]):
             return    
         
+        if not isPosChecked:
+            return
         activeLeg = multi.activeLeg
         passiveLeg = multi.passiveLegs[0] 
         
@@ -221,18 +224,14 @@ class SpreadOptionAlgo(MultiAlgoTemplate):
         
         s1 = activeLeg.bidPrice 
         s2 = passiveLeg.bidPrice * self.ratio
-
-        #print s1, s2
         
         # 获得腿的净持仓
         netPos1 = activeLeg.netPos
         netPos2 = passiveLeg.netPos
-        print netPos1, netPos2
         
         spreadCalculator = KirkMethod(s1, s2, self.K, self.r, self.T, self.sigma1, self.sigma2, self.rho, self.cp)
         delta1, delta2 = spreadCalculator.OptionDelta()
         gamma1, gamma2 = spreadCalculator.OptionGamma()
-        print str(delta1)+activeLeg.vtSymbol, str(delta2)+passiveLeg.vtSymbol
         
         if self.direction == 'short':
             delta1 = -delta1
@@ -251,6 +250,8 @@ class SpreadOptionAlgo(MultiAlgoTemplate):
         # 计算应建仓数量
         newNetPos1 = int(round(delta1 * self.amount / self.contract1.size, 0)) 
         newNetPos2 = int(round(delta2 * self.amount * self.ratio / self.contract2.size, 0))
+        print 'tick事件----'+activeLeg.vtSymbol+u'现仓1:'+str(netPos1)+u'现仓2:'+str(netPos2)+u'新仓1应为：'+str(newNetPos1)+u'新仓2应为:'+str(newNetPos2)  
+        print 'tick事件----'+str(delta1)+activeLeg.vtSymbol, str(delta2)+passiveLeg.vtSymbol
         
         # 计算主动腿和被动腿委托量
         activeAdjustVolume = newNetPos1 - netPos1
@@ -379,18 +380,14 @@ class SpreadOptionAlgo(MultiAlgoTemplate):
         
         s1 = activeLeg.bidPrice 
         s2 = passiveLeg.bidPrice * self.ratio
-
-        #print s1, s2
                 
         # 获得腿的净持仓
         netPos1 = activeLeg.netPos
         netPos2 = passiveLeg.netPos
-        print netPos1, netPos2
         
         spreadCalculator = KirkMethod(s1, s2, self.K, self.r, self.T, self.sigma1, self.sigma2, self.rho, self.cp)
         delta1, delta2 = spreadCalculator.OptionDelta()
-        gamma1, gamma2 = spreadCalculator.OptionGamma()
-        print str(delta1)+activeLeg.vtSymbol, str(delta2)+passiveLeg.vtSymbol
+        gamma1, gamma2 = spreadCalculator.OptionGamma()       
         
         if self.direction == 'short':
             delta1 = -delta1
@@ -410,6 +407,12 @@ class SpreadOptionAlgo(MultiAlgoTemplate):
         # 计算应建仓数量
         newNetPos1 = int(round(delta1 * self.amount / self.contract1.size, 0)) 
         newNetPos2 = int(round(delta2 * self.amount * self.ratio / self.contract2.size, 0))
+        optionParams = [s1, s2, self.K, self.r, self.T, self.sigma1, self.sigma2, self.rho, self.cp]
+        f = lambda x:[str(y) for y in x]
+        paramsStr = '--'.join(f(optionParams))
+        print 'pos事件----'+u'期权参数'+paramsStr
+        print 'pos事件----'+activeLeg.vtSymbol+u'现仓1:'+str(netPos1)+u'现仓2:'+str(netPos2)+u'新仓1应为：'+str(newNetPos1)+u'新仓2应为:'+str(newNetPos2)  
+        print 'pos事件----'+str(delta1)+activeLeg.vtSymbol, str(delta2)+passiveLeg.vtSymbol         
         
         # 计算主动腿和被动腿委托量
         activeAdjustVolume = newNetPos1 - netPos1
