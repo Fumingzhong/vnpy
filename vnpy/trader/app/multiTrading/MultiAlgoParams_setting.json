@@ -1,13 +1,13 @@
 {
     "m.01-05":
                 {
-                    "K": 380,
+                    "K": 300,
                     "r": 0.035,
                     "endDate": "2018-12-29",
-                    "sigma1": 0.3,
-                    "sigma2": 0.3,
-                    "rho": 0.72,
-                    "cp": 1,
+                    "sigma1": 0.21,
+                    "sigma2": 0.11,
+                    "rho": 0.92,
+                    "cp": -1,
 		    "direction": "short",
 		    "amount": 200,
 		    "bandWidth":0.1,
@@ -16,12 +16,12 @@
                 },
     "i.01-05":
                 {
-                    "K": 15,
+                    "K": -10,
                     "r": 0.035,
                     "endDate": "2018-12-29",
-                    "sigma1": 0.3,
-                    "sigma2": 0.3,
-                    "rho": 0.92,
+                    "sigma1": 0.24,
+                    "sigma2": 0.23,
+                    "rho": 0.53,
                     "cp": -1,
 		    "direction": "short",
 		    "amount": 100,

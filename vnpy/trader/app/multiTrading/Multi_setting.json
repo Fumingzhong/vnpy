@@ -27,7 +27,7 @@
             {
                 "vtSymbol": "i1901",
                 "ratio": 1,
-                "multiplier": 7.0,
+                "multiplier": 1.0,
                 "payup": 2
             },
 
@@ -35,7 +35,7 @@
             {
                 "vtSymbol": "rb1905",
                 "ratio": -1,
-                "multiplier": -1.0,
+                "multiplier": -0.15,
                 "payup": 2
             }
         ]

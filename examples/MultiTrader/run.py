@@ -25,7 +25,38 @@ from vnpy.trader.gateway import ctpGateway
 
 sys.path.append(r'C:\vnpy\vnpy\trader\app')
 from multiTrading.multiEngine import MultiDataEngine, MultiAlgoEngine, MultiEngine
+from vnpy.event import Event,EVENT_TIMER
+from datetime import datetime
+from time import sleep
+import multiTrading
+import threading
 
+########################################################################
+class CloseEventEngine(QtCore.QObject):
+    """mainEngine退出事件"""
+    signal = QtCore.Signal(type(Event()))
+
+    #----------------------------------------------------------------------
+    def __init__(self, mainEngine, eventEngine):
+        """Constructor"""
+        super(CloseEventEngine, self).__init__()
+        self.mainEngine = mainEngine
+        self.eventEngine = eventEngine
+        self.eventEngine.register(EVENT_TIMER, self.signal.emit)
+        self.signal.connect(self.processStopEvent)
+        
+    #----------------------------------------------------------------------
+    def processStopEvent(self):
+        """关闭事件引擎"""
+        nowStr = datetime.now().strftime('%H:%M:%S')     
+        if nowStr > '15:00:00':
+            self.mainEngine.exit()
+            print u'退出主引擎'
+            self.mainEngine.writeLog(u'退出主引擎')
+            QtCore.QCoreApplication.quit()
+            print u'程序结束'
+            self.mainEngine.writeLog(u'退出程序')
+        
 #----------------------------------------------------------------------
 def main():
     """主程序入口"""
@@ -39,8 +70,7 @@ def main():
     me = MainEngine(ee)
     
     # 添加交易接口
-    me.addGateway(ctpGateway)
-    
+    me.addGateway(ctpGateway)    
     
     # 交易接口连接
     me.connect(ctpGateway.gatewayName)
@@ -50,11 +80,25 @@ def main():
     tdApi = gateway.tdApi
     tdApi.reqID += 1
     tdApi.reqQryInstrument({}, tdApi.reqID)  
+    
+    # 等到查询持仓情况
+    while True:
+        if not tdApi.symbolSizeDict:
+            sleep(1)
+            print 'sleep to wait for reqQryInstrument to finish!'
+        else:
+            print 'reqQryInstrument finished!'
+            break
+    # 添加应用
+    me.addApp(multiTrading)    
     # 组合模块
-    multiEngine = MultiEngine(me, ee)
+    multiEngine = me.appDict[multiTrading.appName]
     multiEngine.init()
     multiDataEngine = multiEngine.dataEngine
-    multiAlgoEngine = multiEngine.algoEngine
+    multiAlgoEngine = multiEngine.algoEngine    
+    
+    # 创建关闭事件
+    closeEventEngine = CloseEventEngine(me, ee)
     
     # 在主线程中启动Qt事件循环
     sys.exit(qApp.exec_())

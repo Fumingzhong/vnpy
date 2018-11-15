@@ -551,7 +551,7 @@ class SpreadOptionAlgo(MultiAlgoTemplate):
             self.cancelAllOrders()
             
         self.active = False
-        self.writeLog(u'算法停止')
+        self.writeLog(self.multiName+':'+u'算法停止')
         
         return self.active             
         

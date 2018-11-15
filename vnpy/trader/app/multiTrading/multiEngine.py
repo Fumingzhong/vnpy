@@ -124,7 +124,7 @@ class MultiDataEngine(object):
             
             self.subscribeMarketData(passiveLeg.vtSymbol)
         
-        # 初始化组合价格
+        # 初始化组合
         multi.initMulti()
         
         self.putMultiTickEvent(multi)
@@ -571,10 +571,10 @@ class MultiEngine(object):
         self.dataEngine = MultiDataEngine(mainEngine, eventEngine)
         self.algoEngine = MultiAlgoEngine(self.dataEngine, mainEngine, eventEngine)
         
-        self.eventEngine.register(EVENT_TIMER, self.processStopEvent)
+        #self.eventEngine.register(EVENT_TIMER, self.processStopEvent)
         
-        # 主引擎开关
-        self.active = True
+        ## 主引擎开关
+        #self.active = True
         
     #----------------------------------------------------------------------
     def init(self):
@@ -583,14 +583,14 @@ class MultiEngine(object):
         self.algoEngine.loadSetting()
         self.algoEngine.startAll()
         
-    #----------------------------------------------------------------------
-    def processStopEvent(self, event):
-        """处理组合引擎关闭事件"""
-        nowStr = datetime.now().strftime('%H:%M:%S')
-        if not self.active:
-            return        
-        if nowStr > '18:00:00':
-            self.stop()
+    ##----------------------------------------------------------------------
+    #def processStopEvent(self, event):
+        #"""处理组合引擎关闭事件"""
+        #nowStr = datetime.now().strftime('%H:%M:%S')
+        #if not self.active:
+            #return        
+        #if nowStr > '15:01:00':
+            #self.stop()
         
         
     #----------------------------------------------------------------------
@@ -600,7 +600,7 @@ class MultiEngine(object):
         
         self.algoEngine.stopAll()
         self.algoEngine.saveSetting()
-        self.active = False
+        #self.active = False
     
         
     
