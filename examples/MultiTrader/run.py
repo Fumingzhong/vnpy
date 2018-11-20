@@ -48,7 +48,7 @@ class CloseEventEngine(QtCore.QObject):
     def processStopEvent(self):
         """关闭事件引擎"""
         nowStr = datetime.now().strftime('%H:%M:%S')     
-        if nowStr > '19:00:00':
+        if nowStr > '25:00:00':
             self.mainEngine.exit()
             print u'退出主引擎'
             self.mainEngine.writeLog(u'退出主引擎')

@@ -24,6 +24,9 @@ class MultiAlgoTemplate(object):
     algoParamsDict = {}                             # 策略参数
     algoParamsFileName = 'MultiAlgoParams_setting.json'
     algoParamsFilePath = getJsonPath(algoParamsFileName, __file__)
+    
+    tradeTimeFileName = 'TradeTime.json'            # 所有品种交易时间
+    tradeTimeFilePath = getJsonPath(tradeTimeFileName, __file__)
 
     #----------------------------------------------------------------------
     def __init__(self, algoEngine, multi):
@@ -52,6 +55,49 @@ class MultiAlgoTemplate(object):
                 __d[k] = v
             
             self.__dict__ = __d
+            
+        # 获得主动腿和被动腿的交易时间段
+        self.activeTradeTime, self.passiveTradeTime = self.getMultiTradePeriods()
+            
+    #----------------------------------------------------------------------
+    def getMultiTradePeriods(self):
+        """获得腿的交易时间段"""
+        # 初始化交易时间段
+        activeTradeTime = []
+        passiveTradeTime = []
+        
+        multi = self.multi
+        activeLeg = multi.activeLeg
+        passiveLeg = multi.passiveLegs[0]
+        
+        activeVtSymbol = activeLeg.vtSymbol 
+        passiveVtSymbol = passiveLeg.vtSymbol
+        
+        activeProduct = ZfmFunctions().filterNumStr(activeVtSymbol).lower()
+        passiveProduct = ZfmFunctions().filterNumStr(passiveVtSymbol).lower()
+        # 读取交易时间段配置文件
+        try:
+            with open(self.tradeTimeFilePath) as f:
+                l = json.load(f)
+                if not l:
+                    self.writeLog(u'交易时间文件内容为空')
+                else:
+                    for key in l.keys():
+                        tempDict = l[key]
+                        tempProducts = tempDict['products']
+                        tempProducts = [x.lower() for x in tempProducts]
+                        if activeProduct in tempProducts:
+                            activeTradeTime = tempDict['timePeriods']
+                            
+                        if passiveProduct in tempProducts:
+                            passiveTradeTime = tempDict['timePeriods']
+        except:
+            content = u'交易时间文件配置加载出错，原因：' + traceback.format_exc()
+            self.writeLog(content)    
+        
+        return activeTradeTime, passiveTradeTime
+                    
+                
         
     #----------------------------------------------------------------------
     def updateMultiTick(self, multi):
@@ -520,6 +566,28 @@ class SpreadOptionAlgo(MultiAlgoTemplate):
             legVolume = order.totalVolume
             
             print legVtSymbol, legDirection, legOffset, legPrice, legVolume
+            if order.cancelTime:
+                nowStr = order.cancelTime
+            else:
+                nowStr = datetime.now().strftime('%H:%M:%S')
+            
+            
+            isClosed = True
+            if vtSymbol == self.activeVtSymbol:
+                for tradePeriod in self.activeTradeTime:
+                    if nowStr >= tradePeriod[0] and nowStr <= tradePeriod[1]:
+                        isClosed = False
+                        print 'it is not the trade time of ' + vtSymbol 
+                        break
+            else:
+                for tradePeriod in self.passiveTradeTime:
+                    if nowStr >= tradePeriod[0] and nowStr <= tradePeriod[1]:
+                        isClosed = False
+                        print 'it is not the trade time of ' + vtSymbol 
+                        break                    
+            # 是否休盘
+            if isClosed:
+                return
             if not legVolume:
                 pass
             else:
