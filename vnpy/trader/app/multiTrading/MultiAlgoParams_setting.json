@@ -1,48 +1,154 @@
 {
-    "j.01-05":
+    "pp.01-05":
                 {
-                    "K": 240,
+                    "K": 290,
                     "r": 0.035,
-                    "endDate": "2018-12-29",
-                    "sigma1": 0.24,
-                    "sigma2": 0.29,
-                    "rho": 0.98,
+                    "endDate": "2018-12-28",
+                    "sigma1": 0.19,
+                    "sigma2": 0.145,
+                    "rho": 0.93,
+                    "cp": 1,
+		    "direction": "short",
+		    "amount": 80,
+		    "bandWidth":0.1,
+		    "ratio":1
+                
+                },
+    "SF.01-05":
+                {
+                    "K": 250,
+                    "r": 0.035,
+                    "endDate": "2018-12-22",
+                    "sigma1": 0.195,
+                    "sigma2": 0.187,
+                    "rho": 0.952,
+                    "cp": 1,
+		    "direction": "long",
+		    "amount": 80,
+		    "bandWidth":0.2,
+		    "ratio":1
+                
+                },
+    "FG.01-05":
+                {
+                    "K": 52,
+                    "r": 0.035,
+                    "endDate": "2018-11-31",
+                    "sigma1": 0.139,
+                    "sigma2": 0.137,
+                    "rho": 0.978,
                     "cp": -1,
 		    "direction": "short",
 		    "amount": 800,
-		    "bandWidth":0.01,
+		    "bandWidth":0.2,
+		    "ratio":1
+                
+                },
+    "al.01-02":
+                {
+                    "K": -25,
+                    "r": 0.035,
+                    "endDate": "2018-12-20",
+                    "sigma1": 0.078,
+                    "sigma2": 0.073,
+                    "rho": 0.993,
+                    "cp": -1,
+		    "direction": "long",
+		    "amount": 50,
+		    "bandWidth":0.2,
+		    "ratio":1
+                
+                },
+    "ag.12-06":
+                {
+                    "K": -26,
+                    "r": 0.035,
+                    "endDate": "2018-12-15",
+                    "sigma1": 0.087,
+                    "sigma2": 0.09,
+                    "rho": 0.99,
+                    "cp": 1,
+		    "direction": "short",
+		    "amount": 150,
+		    "bandWidth":0.2,
+		    "ratio":1
+                
+                },
+		
+    "MA.01-05":
+                {
+                    "K": -18,
+                    "r": 0.035,
+                    "endDate": "2018-12-16",
+                    "sigma1": 0.3,
+                    "sigma2": 0.235,
+                    "rho": 0.988,
+                    "cp": -1,
+		    "direction": "long",
+		    "amount": 160,
+		    "bandWidth":0.2,
+		    "ratio":1
+                
+                },
+    "jd.01-05":
+                {
+                    "K": 619,
+                    "r": 0.035,
+                    "endDate": "2018-12-08",
+                    "sigma1": 0.215,
+                    "sigma2": 0.147,
+                    "rho": 0.822,
+                    "cp": -1,
+		    "direction": "short",
+		    "amount": 200,
+		    "bandWidth":0.1,
+		    "ratio":1
+                
+                },
+    "bu.12-06":
+                {
+                    "K": 152,
+                    "r": 0.035,
+                    "endDate": "2018-12-01",
+                    "sigma1": 0.259,
+                    "sigma2": 0.25,
+                    "rho": 0.995,
+                    "cp": 1,
+		    "direction": "short",
+		    "amount": 160,
+		    "bandWidth":0.1,
+		    "ratio":1
+                
+                },
+    "hc.01-05":
+                {
+                    "K": 194,
+                    "r": 0.035,
+                    "endDate": "2018-12-29",
+                    "sigma1": 0.209,
+                    "sigma2": 0.174,
+                    "rho": 0.973,
+                    "cp": -1,
+		    "direction": "long",
+		    "amount": 160,
+		    "bandWidth":0.1,
 		    "ratio":1
                 
                 },
     "rb.01-05":
                 {
-                    "K": 306,
+                    "K": 281,
                     "r": 0.035,
-                    "endDate": "2018-12-29",
-                    "sigma1": 0.22,
-                    "sigma2": 0.175,
-                    "rho": 0.95,
+                    "endDate": "2018-12-2",
+                    "sigma1": 0.204,
+                    "sigma2": 0.173,
+                    "rho": 0.971,
                     "cp": 1,
-		    "direction": "long",
-		    "amount": 1000,
-		    "bandWidth":0.01,
-		    "ratio":1
-                
-                },
-    "ccs.01-01":
-                {
-                    "K": -480,
-                    "r": 0.035,
-                    "endDate": "2018-11-31",
-                    "sigma1": 0.0913,
-                    "sigma2": 0.0886,
-                    "rho": 0.7012,
-                    "cp": 1,
-		    "direction": "long",
-		    "amount": 1600,
-		    "bandWidth":0.1,
+		    "direction": "short",
+		    "amount": 160,
+		    "bandWidth":0.2,
 		    "ratio":1
                 
                 }
-
+		
 }

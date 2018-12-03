@@ -14,7 +14,7 @@ from vnpy.trader.vtConstant import (EMPTY_INT, EMPTY_FLOAT,
 from vnpy.trader.vtFunction import getJsonPath 
 import json
 import traceback
-from datetime import date
+from datetime import date,datetime
 
 
 ########################################################################
@@ -235,6 +235,7 @@ class SpreadOptionAlgo(MultiAlgoTemplate):
         self.contract1 = self.algoEngine.mainEngine.getContract(self.activeLeg.vtSymbol)
         self.contract2 = self.algoEngine.mainEngine.getContract(self.passiveLeg.vtSymbol)
         
+        self.lastSpreadPrice = EMPTY_FLOAT       
         
     #----------------------------------------------------------------------
     def updateMultiTick(self, multi):
@@ -242,6 +243,9 @@ class SpreadOptionAlgo(MultiAlgoTemplate):
         self.multi = multi
         isPosChecked = self.algoEngine.mainEngine.getGateway(self.contract1.gatewayName).tdApi.isPosChecked
         
+        # 到期直接返回，在持仓事件中平仓
+        if not self.T:
+            return
         # 若算法没有启动则直接返回
         if not self.active:
             return
@@ -268,8 +272,18 @@ class SpreadOptionAlgo(MultiAlgoTemplate):
             self.cancelLegOrder(passiveLeg.vtSymbol)
             return        
         
-        s1 = activeLeg.bidPrice 
-        s2 = passiveLeg.bidPrice * self.ratio
+        priceTick1 = self.contract1.priceTick
+        priceTick2 = self.contract2.priceTick
+        s1 = self.roundToPriceTick(priceTick1, (activeLeg.bidPrice + activeLeg.askPrice)/2)
+        s2 = self.roundToPriceTick(priceTick2, (passiveLeg.bidPrice * self.ratio + passiveLeg.askPrice * self.ratio)/2)
+        
+        # 同价差不刷单
+        lastSpreadPrice = self.lastSpreadPrice
+        newSpreadPrice = s1 - self.ratio * s2
+        
+        if newSpreadPrice == lastSpreadPrice:
+            return
+        
         
         # 获得腿的净持仓
         netPos1 = activeLeg.netPos
@@ -329,6 +343,7 @@ class SpreadOptionAlgo(MultiAlgoTemplate):
                 print activeVtSymbol, activeDirection, activeOffset, activePrice, activeVolume
                 self.sendLegOrder(activeVtSymbol, activeDirection, activeOffset, activePrice, 
                                  activeVolume)
+                self.lastSpreadPrice = newSpreadPrice
             
         # 被动腿下单参数
         passiveVtSymbol = passiveLeg.vtSymbol
@@ -354,6 +369,7 @@ class SpreadOptionAlgo(MultiAlgoTemplate):
                 print passiveVtSymbol, passiveDirection, passiveOffset, passivePrice, passiveVolume
                 self.sendLegOrder(passiveVtSymbol, passiveDirection, passiveOffset, passivePrice, 
                                  passiveVolume)
+                self.lastSpreadPrice = newSpreadPrice
     
     #----------------------------------------------------------------------
     def calculateOffsetAndVolume(self, adjustVolume, newPos, pos):
@@ -396,6 +412,46 @@ class SpreadOptionAlgo(MultiAlgoTemplate):
     def updateMultiPos(self, multi):
         """价差持仓更新"""
         self.multi = multi
+        
+        activeLeg = multi.activeLeg
+        passiveLeg = multi.passiveLegs[0] 
+        
+        if not activeLeg.bidPrice or not activeLeg.askPrice or not passiveLeg.bidPrice or not passiveLeg.askPrice:
+            return        
+        
+        # 到期平仓
+        if not self.T:
+            activePos = activeLeg.netPos
+            passivePos = passiveLeg.netPos
+            activeVtSymbol = activeLeg.vtSymbol
+            passiveVtSymbol = passiveLeg.vtSymbol
+            activePrice = self.roundToPriceTick(self.contract1.priceTick, (activeLeg.bidPrice + activeLeg.askPrice)/2)
+            passivePrice = self.roundToPriceTick(self.contract2.priceTick, (passiveLeg.bidPrice + passiveLeg.askPrice)/2)
+            if activePos > 0:
+                activeDirection = DIRECTION_LONG
+                activePrice = activePrice + activeLeg.payup * self.contract1.priceTick
+            elif activePos < 0:
+                activeDirection = DIRECTION_SHORT
+                activePrice = activePrice - activeLeg.payup * self.contract1.priceTick
+                
+            if passivePos > 0:
+                passiveDirection = DIRECTION_LONG
+                passivePrice = passivePrice + passiveLeg.payup * self.contract2.priceTick
+            elif passivePos < 0:
+                passiveDirection = DIRECTION_SHORT
+                passivePrice = passivePrice - passiveLeg.payup * self.contract2.priceTick
+            
+            if activePos:
+                self.sendLegOrder(activeVtSymbol, activeDirection, OFFSET_CLOSE, 
+                                 activePrice, 
+                                 abs(activePos))
+                
+            if passivePos:
+                self.sendLegOrder(passiveVtSymbol, passiveDirection, OFFSET_CLOSE, 
+                                 passivePrice, 
+                                 abs(passivePos))
+            return
+                
         # 若算法没有启动则直接返回
         if not self.active:
             return
@@ -411,12 +467,6 @@ class SpreadOptionAlgo(MultiAlgoTemplate):
             self.legOrderDict[passiveVtSymbol]):
             return    
         
-        activeLeg = multi.activeLeg
-        passiveLeg = multi.passiveLegs[0] 
-        
-        if not activeLeg.bidPrice or not activeLeg.askPrice or not passiveLeg.bidPrice or not passiveLeg.askPrice:
-            return
-        
         # 处理tick中tickstart与tickend之间仍有成交的情况
         if multi.time[:-4] > '14:59:00' and multi.time[:-4] <= '14:59:30':
             self.cancelLegOrder(activeLeg.vtSymbol)
@@ -424,8 +474,17 @@ class SpreadOptionAlgo(MultiAlgoTemplate):
             return        
         
         
-        s1 = activeLeg.bidPrice 
-        s2 = passiveLeg.bidPrice * self.ratio
+        priceTick1 = self.contract1.priceTick
+        priceTick2 = self.contract2.priceTick
+        s1 = self.roundToPriceTick(priceTick1, (activeLeg.bidPrice + activeLeg.askPrice)/2)
+        s2 = self.roundToPriceTick(priceTick2, (passiveLeg.bidPrice * self.ratio + passiveLeg.askPrice * self.ratio)/2)
+        
+        # 同价差不刷单
+        lastSpreadPrice = self.lastSpreadPrice
+        newSpreadPrice = s1 - self.ratio * s2
+        
+        if newSpreadPrice == lastSpreadPrice:
+            return        
                 
         # 获得腿的净持仓
         netPos1 = activeLeg.netPos
@@ -489,6 +548,7 @@ class SpreadOptionAlgo(MultiAlgoTemplate):
                 print activeVtSymbol, activeDirection, activeOffset, activePrice, activeVolume
                 self.sendLegOrder(activeVtSymbol, activeDirection, activeOffset, activePrice, 
                                  activeVolume)
+                self.lastSpreadPrice = newSpreadPrice
             
         # 被动腿下单参数
         passiveVtSymbol = passiveLeg.vtSymbol
@@ -512,7 +572,8 @@ class SpreadOptionAlgo(MultiAlgoTemplate):
                 passiveVolume = passiveVolumeList[i]
                 print passiveVtSymbol, passiveDirection, passiveOffset, passivePrice, passiveVolume
                 self.sendLegOrder(passiveVtSymbol, passiveDirection, passiveOffset, passivePrice, 
-                                 passiveVolume)   
+                                 passiveVolume)  
+                self.lastSpreadPrice = newSpreadPrice
         
     #----------------------------------------------------------------------
     def updateTrade(self, trade):
@@ -672,7 +733,16 @@ class SpreadOptionAlgo(MultiAlgoTemplate):
             for vtOrderID in orderList:
                 self.algoEngine.cancelOrder(vtOrderID)
                 
-        self.writeLog(u'全部撤单')        
+        self.writeLog(u'全部撤单')   
+        
+    #----------------------------------------------------------------------
+    def roundToPriceTick(self, priceTick, price):
+        """取整价格到合约最小价格变动"""
+        if not priceTick:
+            return price
+        
+        newPrice = round(price/priceTick, 0) * priceTick
+        return newPrice        
         
         
     
