@@ -8,10 +8,10 @@
                     "sigma2": 0.145,
                     "rho": 0.93,
                     "cp": 1,
-		    "direction": "short",
-		    "amount": 80,
-		    "bandWidth":0.1,
-		    "ratio":1
+					"direction": "short",
+					"amount": 80,
+					"bandWidth":0.1,
+					"ratio":1
                 
                 },
     "SF.01-05":
@@ -23,10 +23,10 @@
                     "sigma2": 0.187,
                     "rho": 0.952,
                     "cp": 1,
-		    "direction": "long",
-		    "amount": 80,
-		    "bandWidth":0.2,
-		    "ratio":1
+					"direction": "long",
+					"amount": 80,
+					"bandWidth":0.2,
+					"ratio":1
                 
                 },
     "FG.01-05":
@@ -38,10 +38,10 @@
                     "sigma2": 0.137,
                     "rho": 0.978,
                     "cp": -1,
-		    "direction": "short",
-		    "amount": 800,
-		    "bandWidth":0.2,
-		    "ratio":1
+					"direction": "short",
+					"amount": 800,
+					"bandWidth":0.2,
+					"ratio":1
                 
                 },
     "al.01-02":
@@ -53,10 +53,10 @@
                     "sigma2": 0.073,
                     "rho": 0.993,
                     "cp": -1,
-		    "direction": "long",
-		    "amount": 50,
-		    "bandWidth":0.2,
-		    "ratio":1
+					"direction": "long",
+					"amount": 50,
+					"bandWidth":0.1,
+					"ratio":1
                 
                 },
     "ag.12-06":
@@ -68,10 +68,10 @@
                     "sigma2": 0.09,
                     "rho": 0.99,
                     "cp": 1,
-		    "direction": "short",
-		    "amount": 150,
-		    "bandWidth":0.2,
-		    "ratio":1
+					"direction": "short",
+					"amount": 150,
+					"bandWidth":0.2,
+					"ratio":1
                 
                 },
 		
@@ -84,10 +84,10 @@
                     "sigma2": 0.235,
                     "rho": 0.988,
                     "cp": -1,
-		    "direction": "long",
-		    "amount": 160,
-		    "bandWidth":0.2,
-		    "ratio":1
+					"direction": "long",
+					"amount": 160,
+					"bandWidth":0.2,
+					"ratio":1
                 
                 },
     "jd.01-05":
@@ -99,10 +99,10 @@
                     "sigma2": 0.147,
                     "rho": 0.822,
                     "cp": -1,
-		    "direction": "short",
-		    "amount": 200,
-		    "bandWidth":0.1,
-		    "ratio":1
+					"direction": "short",
+					"amount": 200,
+					"bandWidth":0.1,
+					"ratio":1
                 
                 },
     "bu.12-06":
@@ -114,10 +114,10 @@
                     "sigma2": 0.25,
                     "rho": 0.995,
                     "cp": 1,
-		    "direction": "short",
-		    "amount": 160,
-		    "bandWidth":0.1,
-		    "ratio":1
+					"direction": "short",
+					"amount": 160,
+					"bandWidth":0.1,
+					"ratio":1
                 
                 },
     "hc.01-05":
@@ -129,10 +129,10 @@
                     "sigma2": 0.174,
                     "rho": 0.973,
                     "cp": -1,
-		    "direction": "long",
-		    "amount": 160,
-		    "bandWidth":0.1,
-		    "ratio":1
+					"direction": "long",
+					"amount": 160,
+					"bandWidth":0.1,
+					"ratio":1
                 
                 },
     "rb.01-05":
@@ -144,10 +144,10 @@
                     "sigma2": 0.173,
                     "rho": 0.971,
                     "cp": 1,
-		    "direction": "short",
-		    "amount": 160,
-		    "bandWidth":0.2,
-		    "ratio":1
+					"direction": "short",
+					"amount": 160,
+					"bandWidth":0.2,
+					"ratio":1
                 
                 }
 		

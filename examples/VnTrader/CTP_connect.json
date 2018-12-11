@@ -1,7 +1,7 @@
 {
     "brokerID": "9999", 
-    "mdAddress": "tcp://180.168.146.187:10031", 
-    "tdAddress": "tcp://180.168.146.187:10030", 
+    "mdAddress": "tcp://180.168.146.187:10011", 
+    "tdAddress": "tcp://180.168.146.187:10000", 
     "userID": "075668",
     "password": "smileonce@today1"
 }
