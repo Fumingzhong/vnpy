@@ -15,7 +15,9 @@ from vnpy.trader.vtFunction import getJsonPath
 import json
 import traceback
 from datetime import date,datetime
-
+sys.path.append(r'C:\boSpreadArbitrage')
+from dataEngine import windDataEngine 
+from collections import OrderedDict 
 
 ########################################################################
 class MultiAlgoTemplate(object):
@@ -171,6 +173,7 @@ class MultiAlgoTemplate(object):
             with open(self.algoParamsFilePath) as f:
                 l = json.load(f)
                 self.algoParamsDict = l.get(self.multi.name, {})
+                print self.algoParamsDict
                 if not self.algoParamsDict and l:
                     self.writeLog(u'文件无对应组合参数配置')
                 elif not l:
@@ -179,6 +182,7 @@ class MultiAlgoTemplate(object):
                     self.writeLog(u'组合参数配置加载完成')
         except:
             content = u'组合参数配置加载出错，原因：' + traceback.format_exc()
+            print content
             self.writeLog(content)
         return self.algoParamsDict
     #----------------------------------------------------------------------
@@ -224,9 +228,13 @@ class SpreadOptionAlgo(MultiAlgoTemplate):
         self.sigma2 = self.d['sigma2']
         self.rho = self.d['rho']
         self.cp = self.d['cp']
+        self.direction = self.d['direction']
         self.amount = self.d['amount']
         self.bandWidth = self.d['bandWidth']
         self.ratio = self.d['ratio']
+        self.isFixed = self.d['isFixed']
+        self.volDays = self.d['volDays']
+        self.hlDays = self.d['hlDays']
         
         # 加载合约信息
         self.activeLeg = multi.activeLeg
@@ -240,10 +248,123 @@ class SpreadOptionAlgo(MultiAlgoTemplate):
         self.lastActiveOrderPrice = EMPTY_FLOAT
         self.lastPassiveOrderPrice = EMPTY_FLOAT
         
+        # 由收到行情后进行计算
+        if not self.isFixed:
+            self.wDataEngine = windDataEngine()
+            #self.endDate = EMPTY_STRING 
+            self.sigma1 = self.getSigma(self.activeLeg.vtSymbol, self.volDays)
+            self.sigma2 = self.getSigma(self.passiveLeg.vtSymbol, self.volDays) 
+            self.amount = self.contract1.size * 10
+            
+            paramDict = {}
+            activeProduct = ZfmFunctions().filterNumStr(self.contract1.symbol)
+            passiveProduct = ZfmFunctions().filterNumStr(self.contract2.symbol)
+            activeExchange = self.wDataEngine.getExchangeCode(activeProduct)
+            passiveExchange = self.wDataEngine.getExchangeCode(passiveProduct)
+            activeCode = '.'.join([self.contract1.symbol, activeExchange])
+            passiveCode = '.'.join([self.contract2.symbol, passiveExchange])            
+            paramDict['contractPair'] = [activeCode, passiveCode]
+            paramDict['field'] = 'high,low,open,close'
+            
+            endDay = date.today().strftime('%Y-%m-%d')
+            startDay = self.wDataEngine.w.tdaysoffset(-self.hlDays, endDay, 'Days=Trading').Data[0][0]
+            startDay = startDay.strftime('%Y-%m-%d')
+            startTime = startDay + ' 21:00:00'
+            endTime = endDay + ' 15:15:00'  # 由于万德数据必须取到15分钟才能取到最后一根数据    
+            
+            paramDict['startTime'] = startTime
+            paramDict['endTime'] = endTime
+            paramDict['barSize'] = 15
+            paramDict['productPair'] = [activeProduct, passiveProduct]
+            paramDict['filePath'] = getJsonPath('TradeTime.json', __file__)
+            paramDict['pairRatio'] = [1, -1]
+            paramDict['formKey'] = multi.name
+            
+            self.high, self.low = self.getHighLow(paramDict)  
+            self.rho = self.getRho(paramDict)
+            print self.sigma1, self.sigma2, self.high, self.low, self.rho
+    
+    #----------------------------------------------------------------------
+    def saveAlgoParamDict(self):
+        """保存算法的参数"""
+        K = self.K
+        r = self.r
+        endDate = self.endDate
+        sigma1 = self.sigma1
+        sigma2 = self.sigma2
+        rho = self.rho
+        cp = self.cp
+        direction = self.direction
+        amount = self.amount
+        bandWidth = self.bandWidth
+        ratio = self.ratio
+        isFixed = self.isFixed
+        volDays = self.volDays
+        hlDays = self.hlDays
+        
+        paramDict = {}
+        paramDict['K'] = K
+        paramDict['r'] = r
+        paramDict['endDate'] = endDate
+        paramDict['sigma1'] = sigma1
+        paramDict['sigma2'] = sigma2
+        paramDict['rho'] = rho
+        paramDict['cp'] = cp
+        paramDict['direction'] = direction
+        paramDict['amount'] = amount
+        paramDict['bandWidth'] = bandWidth
+        paramDict['ratio'] = ratio
+        paramDict['isFixed'] = isFixed
+        paramDict['volDays'] = volDays
+        paramDict['hlDays'] = hlDays
+        
+        paramKey = self.multi.name
+        
+        ud = {paramKey: paramDict}
+        
+        # 打开原有文件
+        with open(self.algoParamsFilePath) as f:
+            d = json.load(f, 
+                         object_pairs_hook=OrderedDict)
+            f.close()
+            
+        # 更新后保存
+        with open(self.algoParamsFilePath, mode='w') as f:
+            d.update(ud)
+            json.dump(d, f, 
+                     indent=4)
+            f.close()
+        
+        
+            
+    #----------------------------------------------------------------------
+    def getSigma(self, symbol, volDays):
+        """获得标的的历史波动率"""
+        if '.' not in symbol:
+            product = ZfmFunctions().filterNumStr(symbol)
+            exchangeCode = self.wDataEngine.getExchangeCode(product)
+            symbol = symbol + '.' + exchangeCode
+        RSHisVol = self.wDataEngine.getRSHisVol(symbol, volDays, barSize=15, filePath='TradeTime.json')
+        return RSHisVol
+    
+    #----------------------------------------------------------------------
+    def getHighLow(self, paramDict):
+        """获得价差的历史高点和低点"""
+        highDict, lowDict = self.wDataEngine.getSpreadHighLow(paramDict)
+        
+        return highDict.values()[0][1], lowDict.values()[0][1]       
+    
+    #----------------------------------------------------------------------
+    def getRho(self, paramDict):
+        """获得相关性"""
+        rho = self.wDataEngine.getSpreadRho(paramDict)
+        
+        return rho
         
     #----------------------------------------------------------------------
     def updateMultiTick(self, multi):
         """组合行情更新"""
+        #print 'getTick'
         self.multi = multi
         isPosChecked = self.algoEngine.mainEngine.getGateway(self.contract1.gatewayName).tdApi.isPosChecked
         
@@ -251,12 +372,15 @@ class SpreadOptionAlgo(MultiAlgoTemplate):
         isSendActive = False
         isSendPassive = False        
         
-        # 到期直接返回，在持仓事件中平仓
-        if not self.T:
-            return
         # 若算法没有启动则直接返回
         if not self.active:
-            return
+            return  
+        
+        if not isPosChecked:
+            return        
+        # 到期直接返回，在持仓事件中平仓
+        if not self.T:
+            return        
         
         # 若当前已有主动腿委托则直接返回
         if (self.activeVtSymbol in self.legOrderDict and
@@ -270,9 +394,7 @@ class SpreadOptionAlgo(MultiAlgoTemplate):
             self.legOrderDict[passiveVtSymbol]):
             self.cancelLegOrder(passiveVtSymbol)
             return    
-        
-        if not isPosChecked:
-            return
+    
         activeLeg = multi.activeLeg
         passiveLeg = multi.passiveLegs[0] 
         
@@ -294,6 +416,43 @@ class SpreadOptionAlgo(MultiAlgoTemplate):
         if abs(newSpreadPrice - lastSpreadPrice) <= self.contract1.priceTick * activeLeg.payup:
             return
         
+        if not self.isFixed:
+            
+            # 无法计算波动率以及相关性时 不做调仓
+            if not self.sigma1 or not self.sigma2 or not self.rho:
+                print 'sigma or rho does not exist!'
+                return   
+            
+            self.direction = DIRECTION_SHORT
+            
+            # 缓存之前的期权类型
+            lastCp = self.cp
+            
+            if self.high or (self.high == 0):
+                if newSpreadPrice > self.high:
+                    # K值第一次赋值
+                    if not self.K and self.K != 0:
+                        self.K = newSpreadPrice
+                        self.cp = -1
+                    # 突破方向改变
+                    elif self.K and lastCp == 1:
+                        self.K = newSpreadPrice
+                        self.cp = -1
+                        
+            if self.low or (self.low == 0):           
+                if newSpreadPrice < self.low:
+                    # K值第一次赋值
+                    if not self.K and self.K != 0:
+                        self.K = newSpreadPrice
+                        self.cp = 1
+                    # 突破方向发生改变
+                    elif self.K and lastCp == -1:
+                        self.K = newSpreadPrice
+                        self.cp = 1
+            # K为空值
+            if not self.K and self.K != 0:
+                return
+                
         
         # 获得腿的净持仓
         netPos1 = activeLeg.netPos
@@ -303,7 +462,7 @@ class SpreadOptionAlgo(MultiAlgoTemplate):
         delta1, delta2 = spreadCalculator.OptionDelta()
         gamma1, gamma2 = spreadCalculator.OptionGamma()
         
-        if self.direction == 'short':
+        if self.direction == DIRECTION_SHORT:
             delta1 = -delta1
             delta2 = -delta2
         else:
@@ -436,6 +595,7 @@ class SpreadOptionAlgo(MultiAlgoTemplate):
     #----------------------------------------------------------------------
     def updateMultiPos(self, multi):
         """价差持仓更新"""
+        #print 'getPos'
         self.multi = multi
         
         activeLeg = multi.activeLeg
@@ -448,8 +608,22 @@ class SpreadOptionAlgo(MultiAlgoTemplate):
         if not activeLeg.bidPrice or not activeLeg.askPrice or not passiveLeg.bidPrice or not passiveLeg.askPrice:
             return        
         
+        # 若算法没有启动则直接返回
+        if not self.active:
+            return  
+        
+        # 若当前已有主动腿委托则直接返回
+        if (self.activeVtSymbol in self.legOrderDict and
+            self.legOrderDict[self.activeVtSymbol]):
+            return
+        
+        # 若当前已有被动腿委托则直接返回
+        passiveVtSymbol = self.multi.passiveLegs[0].vtSymbol
+        if (passiveVtSymbol in self.legOrderDict and
+            self.legOrderDict[passiveVtSymbol]):
+            return           
         # 到期平仓
-        if not self.T:
+        if not self.T or (self.K != 0 and not self.K):
             activePos = activeLeg.netPos
             passivePos = passiveLeg.netPos
             activeVtSymbol = activeLeg.vtSymbol
@@ -479,30 +653,16 @@ class SpreadOptionAlgo(MultiAlgoTemplate):
                 self.sendLegOrder(passiveVtSymbol, passiveDirection, OFFSET_CLOSE, 
                                  passivePrice, 
                                  abs(passivePos))
-            return
-                
-        # 若算法没有启动则直接返回
-        if not self.active:
-            return
-        
-        # 若当前已有主动腿委托则直接返回
-        if (self.activeVtSymbol in self.legOrderDict and
-            self.legOrderDict[self.activeVtSymbol]):
-            return
-        
-        # 若当前已有被动腿委托则直接返回
-        passiveVtSymbol = self.multi.passiveLegs[0].vtSymbol
-        if (passiveVtSymbol in self.legOrderDict and
-            self.legOrderDict[passiveVtSymbol]):
-            return    
+            return 
         
         # 处理tick中tickstart与tickend之间仍有成交的情况
         if multi.time[:-4] > '14:59:00' and multi.time[:-4] <= '14:59:30':
             self.cancelLegOrder(activeLeg.vtSymbol)
             self.cancelLegOrder(passiveLeg.vtSymbol)
             return        
-        
-        
+        # 执行价格为空，不做处理
+        if self.K != 0 and not self.K:
+            return
         priceTick1 = self.contract1.priceTick
         priceTick2 = self.contract2.priceTick
         s1 = self.roundToPriceTick(priceTick1, (activeLeg.bidPrice + activeLeg.askPrice)/2)
@@ -523,7 +683,7 @@ class SpreadOptionAlgo(MultiAlgoTemplate):
         delta1, delta2 = spreadCalculator.OptionDelta()
         gamma1, gamma2 = spreadCalculator.OptionGamma()       
         
-        if self.direction == 'short':
+        if self.direction == DIRECTION_SHORT:
             delta1 = -delta1
             delta2 = -delta2
         else:
@@ -677,6 +837,7 @@ class SpreadOptionAlgo(MultiAlgoTemplate):
             if not legVolume or not leg.bidVolume or not leg.askVolume:
                 return
             
+            # 涨停或者跌停单撤销
             if not leg.bidVolume and legDirection == DIRECTION_LONG:
                 return
             
@@ -737,6 +898,7 @@ class SpreadOptionAlgo(MultiAlgoTemplate):
             
         self.active = False
         self.writeLog(self.multiName+':'+u'算法停止')
+        self.saveAlgoParamDict()
         
         return self.active             
         

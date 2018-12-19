@@ -449,13 +449,16 @@ class MultiAlgoEngine(object):
     #----------------------------------------------------------------------
     def saveSetting(self):
         """保存算法配置"""
-        setting = {}
-        for algo in self.algoDict.values():
-            setting[algo.multiName] = algo.getAlgoParams()
+        #setting = {}
+        #for algo in self.algoDict.values():
+            #setting[algo.multiName] = algo.getAlgoParams()
             
-        f = shelve.open(self.algoFilePath)
-        f['setting'] = setting
-        f.close()
+        #f = shelve.open(self.algoFilePath)
+        #f['setting'] = setting
+        #f.close()
+        
+        for algo in self.algoDict.values():
+            algo.saveAlgoParamDict()
     #----------------------------------------------------------------------
     def loadSetting(self):
         """加载算法配置"""
@@ -468,25 +471,29 @@ class MultiAlgoEngine(object):
             # 保存腿代码和算法对象的映射
             for leg in multi.allLegs:
                 self.vtSymbolAlgoDict[leg.vtSymbol] = algo
-                
+        
+        # 实际配置并未从此处读取        
         # 加载配置
-        f = shelve.open(self.algoFilePath)
-        setting = f.get('setting', None)
-        f.close()
+        #f = shelve.open(self.algoFilePath)
+        #print self.algoFilePath
+        #setting = f.get('setting', None)
+        #f.close()
         
-        if not setting:
-            return
+        #if not setting:
+            #return
         
-        for algo in self.algoDict.values():
-            if algo.multiName in setting:
-                d = setting[algo.multiName]
-                algo.setAlgoParams(d)
+        #for algo in self.algoDict.values():
+            #if algo.multiName in setting:
+                #d = setting[algo.multiName]
+                #algo.setAlgoParams(d)
                 
     #----------------------------------------------------------------------
     def stopAll(self):
         """停止全部算法"""
         for algo in self.algoDict.values():
             algo.stop()
+            
+        #self.saveSetting()
         
     #----------------------------------------------------------------------
     def startAll(self):

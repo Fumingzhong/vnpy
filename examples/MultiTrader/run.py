@@ -48,7 +48,7 @@ class CloseEventEngine(QtCore.QObject):
     def processStopEvent(self):
         """关闭事件引擎"""
         nowStr = datetime.now().strftime('%H:%M:%S')     
-        if nowStr > '25:00:00':
+        if nowStr > '15:00:00' and nowStr < '21:00:00':
             self.mainEngine.exit()
             print u'退出主引擎'
             self.mainEngine.writeLog(u'退出主引擎')
@@ -84,10 +84,12 @@ def main():
     while True:
         if not tdApi.symbolSizeDict:
             sleep(0.5)
+            tdApi.reqID += 1
+            tdApi.reqQryInstrument({}, tdApi.reqID)
             print 'sleep to wait for reqQryInstrument to finish!'
         else:
             print 'reqQryInstrument finished!'
-            break    
+            break
     # 组合模块
     multiEngine = me.appDict[multiTrading.appName]
     multiEngine.init()
