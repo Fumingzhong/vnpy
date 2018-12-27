@@ -21,6 +21,11 @@ from .multiBase import (MultiLeg, MultiMulti, EVENT_MULTITRADING_TICK,
                         EVENT_MULTITRADING_ALGO, EVENT_MULTITRADING_ALGOLOG)
 from .multiAlgo import SpreadOptionAlgo 
 
+EVENT_MULTILOCAL_POSITION = 'eMultiLocalPos'
+EVENT_MULTI_TRADE = 'eMultiTrade'
+
+Multi_POSITION_DB_NAME = 'VnTrader_Multi_Db'
+
 ########################################################################
 class MultiDataEngine(object):
     """多标的数据计算引擎"""
@@ -34,13 +39,20 @@ class MultiDataEngine(object):
         self.eventEngine = eventEngine
         
         # 腿、价差相关字典
-        self.legDict = {}                   # vtSymbol:StLeg
+        self.legDict = {}                   # vtSymbol:StLegDictList stLegDict={multi.name:stLeg}
         self.multiDict = {}                 # name:MultiMulti
-        self.vtSymbolMultiDict = {}         # vtSymbol:MultiMulti
+        self.vtSymbolMultiDict = {}         # vtSymbol:MultiMultiList
+        self.multiNameOrderDict = {}        # multi.name:vtOrderIDList
+        #self.vtOrderIDMultiDict = {}        # vtOderID:multi
         
         self.registerEvent()
         
         self.startTime = datetime.now().strftime('%H:%M:%S')
+        
+        self.qryLocalPosCount  = 0 
+        self.qryLocalPosDistance = 6
+        
+        self.isLocalPosChecked = False
         
     #----------------------------------------------------------------------
     def loadSetting(self):
@@ -60,8 +72,41 @@ class MultiDataEngine(object):
     #----------------------------------------------------------------------
     def saveSetting(self):
         """保存配置"""
-        with open(self.settingFilePath) as f:
-            pass
+        with open(self.settingFilePath, mode='w') as f:
+            fileContentDictList = []
+            for multi in self.multiDict.values():
+                fileContentDict = {}
+                fileContentDict['name'] = multi.name
+                
+                # 获取主动腿配置
+                activeLeg = multi.activeLeg 
+                activeLegSetting = {}
+                activeLegSetting['vtSymbol'] = activeLeg.vtSymbol
+                activeLegSetting['ratio'] = activeLeg.ratio
+                activeLegSetting['multiplier'] = activeLeg.multiplier
+                activeLegSetting['payup'] = activeLeg.payup
+                
+                fileContentDict['activeLeg'] = activeLegSetting
+                
+                # 获取被动腿配置
+                passiveLegs = multi.passiveLegs
+                passiveLegsSettings = []
+                for passiveLeg in passiveLegs:
+                    passiveLegSetting = {}
+                    passiveLegSetting['vtSymbol'] = passiveLeg.vtSymbol
+                    passiveLegSetting['ratio'] = passiveLeg.ratio
+                    passiveLegSetting['multiplier'] = passiveLeg.multiplier
+                    passiveLegSetting['payup'] = passiveLeg.payup
+                    passiveLegsSettings.append(passiveLegSetting)
+                
+                fileContentDict['passiveLegs'] = passiveLegsSettings
+                
+                fileContentDictList.append(fileContentDict)
+                
+            json.dump(fileContentDictList, f, 
+                     indent=4)
+            f.close()
+            
         
     #----------------------------------------------------------------------
     def createMulti(self, setting):
@@ -75,16 +120,16 @@ class MultiDataEngine(object):
             return result, msg
         
         # 检查腿是否已使用
-        l = []
-        l.append(setting['activeLeg']['vtSymbol'])
-        for d in setting['passiveLegs']:
-            l.append(d['vtSymbol'])
+        #l = []
+        #l.append(setting['activeLeg']['vtSymbol'])
+        #for d in setting['passiveLegs']:
+            #l.append(d['vtSymbol'])
             
-        for vtSymbol in l:
-            if vtSymbol in self.vtSymbolMultiDict:
-                existingMulti = self.vtSymbolMultiDict[vtSymbol]
-                msg = u'%s合约已经存在于%s价差中' 
-                return result, msg
+        #for vtSymbol in l:
+            #if vtSymbol in self.vtSymbolMultiDict:
+                #existingMulti = self.vtSymbolMultiDict[vtSymbol]
+                #msg = u'%s合约已经存在于%s价差中' %(vtSymbol, existingMulti.name)
+                #return result, msg
         
         # 创建组合
         multi = MultiMulti()
@@ -101,8 +146,17 @@ class MultiDataEngine(object):
         activeLeg.payup = activeSetting['payup']
         
         multi.addActiveLeg(activeLeg) 
-        self.legDict[activeLeg.vtSymbol] = activeLeg
-        self.vtSymbolMultiDict[activeLeg.vtSymbol] = multi
+        
+        tempLegDict = {multi.name:activeLeg}
+        if activeLeg.vtSymbol not in self.legDict:
+            self.legDict[activeLeg.vtSymbol] = [tempLegDict]
+        else:
+            self.legDict[activeLeg.vtSymbol].append(tempLegDict)
+        
+        if activeLeg.vtSymbol not in self.vtSymbolMultiDict:
+            self.vtSymbolMultiDict[activeLeg.vtSymbol] = [multi]
+        else:
+            self.vtSymbolMultiDict[activeLeg.vtSymbol].append(multi)
         
         self.subscribeMarketData(activeLeg.vtSymbol)
         
@@ -117,8 +171,17 @@ class MultiDataEngine(object):
             passiveLeg.payup = d['payup']
             
             multi.addPassiveLeg(passiveLeg)
-            self.legDict[passiveLeg.vtSymbol] = passiveLeg
-            self.vtSymbolMultiDict[passiveLeg.vtSymbol] = multi
+            
+            tempLegDict = {multi.name:passiveLeg}
+            if passiveLeg.vtSymbol not in self.legDict:
+                self.legDict[passiveLeg.vtSymbol] = [tempLegDict]
+            else:
+                self.legDict[passiveLeg.vtSymbol].append(tempLegDict)
+            
+            if passiveLeg.vtSymbol not in self.vtSymbolMultiDict:
+                self.vtSymbolMultiDict[passiveLeg.vtSymbol] = [multi]
+            else:
+                self.vtSymbolMultiDict[passiveLeg.vtSymbol].append(multi)
             
             self.subscribeMarketData(passiveLeg.vtSymbol)
         
@@ -142,21 +205,25 @@ class MultiDataEngine(object):
             return
         #print 'process tickEvent'
         # 更新腿价格
-        leg = self.legDict[tick.vtSymbol]
-        leg.bidPrice = tick.bidPrice1
-        leg.askPrice = tick.askPrice1
-        leg.bidVolume = tick.bidVolume1
-        leg.askVolume = tick.askVolume1
+        legList = self.legDict[tick.vtSymbol]
+        
+        for i in legList:
+            leg = i.values()[0]
+            leg.bidPrice = tick.bidPrice1
+            leg.askPrice = tick.askPrice1
+            leg.bidVolume = tick.bidVolume1
+            leg.askVolume = tick.askVolume1
         
 
         #print str(leg.bidPrice)+leg.vtSymbol
         
         # 更新组合价格
-        multi = self.vtSymbolMultiDict[tick.vtSymbol]
-        multi.calculatePrice()
+        multiList = self.vtSymbolMultiDict[tick.vtSymbol]
+        for multi in multiList:
+            multi.calculatePrice()
         
-        # 发出事件
-        self.putMultiTickEvent(multi)
+            # 发出事件
+            self.putMultiTickEvent(multi)
         
     #----------------------------------------------------------------------
     def putMultiTickEvent(self, multi):
@@ -172,9 +239,12 @@ class MultiDataEngine(object):
     #----------------------------------------------------------------------
     def processTradeEvent(self, event):
         """处理成交推送"""
+        if not self.isLocalPosChecked:
+            return
         # 检查成交是否需要处理
         trade = event.dict_['data']
         tradeT = trade.tradeTime
+        multiName = trade.multiName 
         
         # 排除之前的成交单
         if tradeT < self.startTime:
@@ -183,8 +253,14 @@ class MultiDataEngine(object):
         if trade.vtSymbol not in self.legDict:
             return
         
+        multi = self.multiDict[multiName]
+        #multi = self.vtOrderIDMultiDict[vtOrderID]
+        
         # 更新腿持仓
-        leg = self.legDict[trade.vtSymbol]
+        allLegs = multi.allLegs
+        for leg in allLegs:
+            if leg.vtSymbol == trade.vtSymbol:
+                break
         direction = trade.direction
         offset = trade.offset
         
@@ -202,38 +278,55 @@ class MultiDataEngine(object):
         #print str(leg.netPos)+trade.vtSymbol+'longPos:'+str(leg.longPos)+'shortPos:'+str(leg.shortPos)+'tradeVolume:'+str(trade.volume)
         
         # 更新价差持仓
-        multi = self.vtSymbolMultiDict[trade.vtSymbol]
-        multi.calculatePos()                            # 不适用
+        multi.calculatePos()                            # 不适用 适用于用来计算组合持仓
         
         # 推送价差持仓更新
-        self.putMultiPosEvent(multi)                    # 不适用
+        self.putMultiPosEvent(multi)                    
         
     #----------------------------------------------------------------------
     def processPosEvent(self, event):
-        """处理持仓推送"""
+        """处理持仓推送,本地持仓查询推送,按标的分次推送，仿真交易所"""
         # 检查持仓是否需要处理
-        pos = event.dict_['data']
-        nowStr = datetime.now().strftime('%H:%M:%S')
+        # singlePos 为本地持仓查询的结果{vtSymbol:[posDetail,...]},posDetail为{'name':multi.name,'longPos':volume, 'shortPos':volume}
+        singlePos = event.dict_['data']
+        #nowStr = datetime.now().strftime('%H:%M:%S')
         #print 'process pos event'+nowStr
-        if pos.vtSymbol not in self.legDict:
-            return
+        vtSymbol = singlePos.keys()[0]
         
-        # 更新腿持仓
-        leg = self.legDict[pos.vtSymbol]
-        direction = pos.direction
+        if vtSymbol not in self.legDict:
+            return 
         
-        if direction == DIRECTION_LONG:
-            leg.longPos = pos.position
-        else:
-            leg.shortPos = pos.position 
-        leg.netPos = leg.longPos - leg.shortPos         # 无疑问
+        multiList = self.vtSymbolMultiDict[vtSymbol]
+        for pos in singlePos.values()[0]:
+            multiName = pos['name']
+            
+            # 更新腿持仓
+            legList = self.legDict[vtSymbol]
+            for legDict in legList:
+                if multiName in legDict:
+                    break
+            
+            for multi in multiList:
+                if multi.name == multiName:
+                    break
+            
+            leg = legDict.values()[0]    
+            leg.longPos = pos['longPos']
+            leg.shortPos = pos['shortPos']
+            
+            leg.netPos = leg.longPos - leg.shortPos
         
-        # 更新组合持仓
-        multi = self.vtSymbolMultiDict[pos.vtSymbol]
-        multi.calculatePrice()
+            # 更新组合持仓
+            multi.calculatePos()
         
-        # 推送组合持仓更新
-        self.putMultiPosEvent(multi)
+            # 推送组合持仓更新
+            self.putMultiPosEvent(multi)
+            
+    #----------------------------------------------------------------------
+    def processCTPPosEvent(self, event):
+        """处理CTP持仓事件，用于初始化仓位"""
+        pass
+        
         
     #----------------------------------------------------------------------
     def putMultiPosEvent(self, multi):
@@ -245,14 +338,55 @@ class MultiDataEngine(object):
         event2 = Event(EVENT_MULTITRADING_POS)
         event2.dict_['data'] = multi
         self.eventEngine.put(event2)
-           
+    
+    #----------------------------------------------------------------------
+    def processTimerEvent(self, event):
+        """处理时间事件，定期查询本地持仓"""
+        self.qryLocalPosCount += 1
+        if self.qryLocalPosCount >= self.qryLocalPosDistance:
+            self.qryLocalPosCount = 0
+            posList = self.getMultiLocalPos()
+            self.isLocalPosChecked = True
+            for pos in posList:
+                posEvent = Event(EVENT_MULTILOCAL_POSITION)
+                posEvent.dict_['data'] = pos
+                self.eventEngine.put(posEvent)
+                
+    #----------------------------------------------------------------------
+    def getMultiLocalPos(self):
+        """获得组合的本地持仓posList:[{vtSymbol:[{'name':multi.name,'longPos':volume,'shortPos':volume}]}]"""
+        posList = []
+        dbClient = self.mainEngine.dbClient
+        db = dbClient[Multi_POSITION_DB_NAME]
+        collectionNames = db.collection_names()
+        for i in collectionNames:
+            pos = {}
+            posKey = i
+            posValue = []
+            collection = db[i]
+            for j in collection.find({}):
+                tempPos = {}
+                tempPos['name'] = j['name']
+                tempPos['longPos'] = j['longPos']
+                tempPos['shortPos'] = j['shortPos']
+                posValue.append(tempPos)
+            
+            if not posValue:
+                continue
+            pos[posKey] = posValue
+            
+            posList.append(pos)
+        
+        return posList           
+        
         
     #----------------------------------------------------------------------
     def registerEvent(self):
         """"""
         self.eventEngine.register(EVENT_TICK, self.processTickEvent)
-        self.eventEngine.register(EVENT_TRADE, self.processTradeEvent)
-        self.eventEngine.register(EVENT_POSITION, self.processPosEvent)
+        self.eventEngine.register(EVENT_MULTI_TRADE, self.processTradeEvent)
+        self.eventEngine.register(EVENT_TIMER, self.processTimerEvent)
+        self.eventEngine.register(EVENT_MULTILOCAL_POSITION, self.processPosEvent)
         
     #----------------------------------------------------------------------
     def subscribeMarketData(self, vtSymbol):
@@ -299,9 +433,12 @@ class MultiAlgoEngine(object):
         self.eventEngine = eventEngine
         
         self.algoDict = OrderedDict()           # multiName:algo
-        self.vtSymbolAlgoDict = {}              # vtSymbol:algo
+        self.vtSymbolAlgoDict = {}              # vtSymbol:algoList
+        self.vtOrderIDAlgoDict = {}            # vtOrderID:algo
         
         self.registerEvent()
+        
+        self.startTime = datetime.now().strftime('%H:%M:%S')
         
     #----------------------------------------------------------------------
     def registerEvent(self):
@@ -339,16 +476,93 @@ class MultiAlgoEngine(object):
         """处理成交事件"""
         trade = event.dict_['data']
         
-        algo = self.vtSymbolAlgoDict.get(trade.vtSymbol, None)
+        #algo = self.vtSymbolAlgoDict.get(trade.vtSymbol, None)
+        algo = self.vtOrderIDAlgoDict.get(trade.vtOrderID, None)
+        tradeT = trade.tradeTime
+        if tradeT < self.startTime:
+            return
+        print trade.__dict__
+        print algo 
+        print self.vtOrderIDAlgoDict
+        
         if algo:
+            # 分组合推送成交事件
+            event = Event(EVENT_MULTI_TRADE)
+            trade.multiName = algo.multiName
+            event.dict_['data'] = trade
+            self.eventEngine.put(event)            
             algo.updateTrade(trade)
+            
+            self.saveLocalMultiPosition(trade)
+            
+    #----------------------------------------------------------------------
+    def uploadMultiPosition(self, posDict):
+        """初始化持仓"""
+        for pos in posDict.values()[0]:
+            flt = {'name': pos['name']}
+            self.mainEngine.dbUpdate(Multi_POSITION_DB_NAME, posDict.keys()[0], pos, flt, upsert=True)
+    
+    #----------------------------------------------------------------------
+    def getDbPosition(self, vtSymbol):
+        """获得特定品种的持仓"""
+        posList = self.mainEngine.dbQuery(Multi_POSITION_DB_NAME, vtSymbol, {})
+        return posList
+        
+    #----------------------------------------------------------------------
+    def saveLocalMultiPosition(self, trade):
+        """成交后将持仓写入数据库"""
+        vtSymbol = trade.vtSymbol
+        multiName = trade.multiName
+        direction = trade.direction 
+        
+        posList = self.getDbPosition(vtSymbol)
+        if posList:
+            isExistPos = False
+            for tempPos in posList:
+                if tempPos['name'] == multiName:
+                    pos = tempPos
+                    isExistPos = True
+                    break
+        
+            if not isExistPos:
+                pos = {}
+                pos['name'] = multiName
+                pos['longPos'] = 0
+                pos['shortPos'] = 0
+                
+            d = {}
+            d['name'] = pos['name']
+            d['longPos'] = pos['longPos']
+            d['shortPos'] = pos['shortPos']
+            if direction == DIRECTION_LONG:
+                d['longPos'] = pos['longPos'] + trade.volume 
+            else:
+                d['shortPos'] = pos['shortPos'] + trade.volume
+        
+            flt = {'name': multiName}
+            self.mainEngine.dbUpdate(Multi_POSITION_DB_NAME, vtSymbol, d, flt, True)
+        else:
+            d = {}
+            d['name'] = multiName
+            d['longPos'] = 0
+            d['shortPos'] = 0
+            if direction == DIRECTION_LONG:
+                d['longPos'] += trade.volume
+            else:
+                d['shortPos'] += trade.volume
+            
+            flt = {'name': multiName}
+            self.mainEngine.dbUpdate(Multi_POSITION_DB_NAME, vtSymbol, d, flt, True)            
+            
+        
             
     #----------------------------------------------------------------------
     def processOrderEvent(self, event):
         """处理委托事件"""
         order = event.dict_['data']
         
-        algo = self.vtSymbolAlgoDict.get(order.vtSymbol, None)
+        #algo = self.vtSymbolAlgoDict.get(order.vtSymbol, None)
+        algo = self.vtOrderIDAlgoDict.get(order.vtOrderID, None)
         if algo:
             algo.updateOrder(order)
             
@@ -359,7 +573,7 @@ class MultiAlgoEngine(object):
             algo.updateTimer()
             
     #----------------------------------------------------------------------
-    def sendOrder(self, vtSymbol, direction, offset, price, volume, payup=0):
+    def sendOrder(self, vtSymbol, direction, offset, price, volume, payup=0, algo=None):
         """发单"""
         contract = self.mainEngine.getContract(vtSymbol)
         if not contract:
@@ -385,6 +599,8 @@ class MultiAlgoEngine(object):
         
         for req in reqList:
             vtOrderID = self.mainEngine.sendOrder(req, contract.gatewayName)
+            if algo:
+                self.vtOrderIDAlgoDict[vtOrderID] = algo
             vtOrderIDList.append(vtOrderID)
         
         return vtOrderIDList
@@ -432,7 +648,7 @@ class MultiAlgoEngine(object):
     #----------------------------------------------------------------------
     def putAlgoEvent(self, algo):
         """发出算法状态更新事件"""
-        event = Event(EVENT_MULTITRADING_ALGO + algo.algoName)          #algo.name是否应为algo.spreadName
+        event = Event(EVENT_MULTITRADING_ALGO + algo.algoName)          
         self.eventEngine.put(event)
         
     #----------------------------------------------------------------------
@@ -470,7 +686,11 @@ class MultiAlgoEngine(object):
             
             # 保存腿代码和算法对象的映射
             for leg in multi.allLegs:
-                self.vtSymbolAlgoDict[leg.vtSymbol] = algo
+                if leg.vtSymbol not in self.vtSymbolAlgoDict:
+                    self.vtSymbolAlgoDict[leg.vtSymbol] = [algo]
+                else:
+                    self.vtSymbolAlgoDict[leg.vtSymbol].append(algo)
+                
         
         # 实际配置并未从此处读取        
         # 加载配置
@@ -529,7 +749,7 @@ class MultiAlgoEngine(object):
     #----------------------------------------------------------------------
     def setAlgoSellPrice(self, multiName, sellPrice):
         """设置算法卖平价格"""
-        algo = self.algoDict.values()
+        algo = self.algoDict[multiName]
         algo.setSellPrice(sellPrice)
         
     #----------------------------------------------------------------------

@@ -254,7 +254,7 @@ class SpreadOptionAlgo(MultiAlgoTemplate):
             #self.endDate = EMPTY_STRING 
             self.sigma1 = self.getSigma(self.activeLeg.vtSymbol, self.volDays)
             self.sigma2 = self.getSigma(self.passiveLeg.vtSymbol, self.volDays) 
-            self.amount = self.contract1.size * 10
+            self.amount = self.contract1.size * 4
             
             paramDict = {}
             activeProduct = ZfmFunctions().filterNumStr(self.contract1.symbol)
@@ -268,6 +268,14 @@ class SpreadOptionAlgo(MultiAlgoTemplate):
             
             endDay = date.today().strftime('%Y-%m-%d')
             startDay = self.wDataEngine.w.tdaysoffset(-self.hlDays, endDay, 'Days=Trading').Data[0][0]
+            # 非当晚启动
+            endDay = self.wDataEngine.w.tdaysoffset(-1, endDay, 'Days=Trading').Data[0][0]
+            try:
+                endDay = endDay.strftime('%Y-%m-%d')
+            except:
+                if 'CT' in endDay:
+                    print 'bad wind connection!'
+                    raise ValueError
             startDay = startDay.strftime('%Y-%m-%d')
             startTime = startDay + ' 21:00:00'
             endTime = endDay + ' 15:15:00'  # 由于万德数据必须取到15分钟才能取到最后一根数据    
@@ -367,6 +375,7 @@ class SpreadOptionAlgo(MultiAlgoTemplate):
         #print 'getTick'
         self.multi = multi
         isPosChecked = self.algoEngine.mainEngine.getGateway(self.contract1.gatewayName).tdApi.isPosChecked
+        isLocalPosChecked = self.algoEngine.dataEngine.isLocalPosChecked
         
         # 同时下单算套利单
         isSendActive = False
@@ -376,7 +385,7 @@ class SpreadOptionAlgo(MultiAlgoTemplate):
         if not self.active:
             return  
         
-        if not isPosChecked:
+        if not isPosChecked or not isLocalPosChecked:
             return        
         # 到期直接返回，在持仓事件中平仓
         if not self.T:
@@ -420,7 +429,7 @@ class SpreadOptionAlgo(MultiAlgoTemplate):
             
             # 无法计算波动率以及相关性时 不做调仓
             if not self.sigma1 or not self.sigma2 or not self.rho:
-                print 'sigma or rho does not exist!'
+                print multi.name + 'sigma or rho does not exist!'
                 return   
             
             self.direction = DIRECTION_SHORT
@@ -904,9 +913,9 @@ class SpreadOptionAlgo(MultiAlgoTemplate):
         
         
     #----------------------------------------------------------------------
-    def sendLegOrder(self, legVtSymbol, legDirection, legOffset, legPrice, legVolume):
+    def sendLegOrder(self, legVtSymbol, legDirection, legOffset, legPrice, legVolume, payup=0):
         """发送每条腿的委托"""
-        legOrderList = self.algoEngine.sendOrder(legVtSymbol, legDirection, legOffset, legPrice, legVolume)
+        legOrderList = self.algoEngine.sendOrder(legVtSymbol, legDirection, legOffset, legPrice, legVolume, payup, self)
         # 保存到字典中
         if legVtSymbol not in self.legOrderDict:
             self.legOrderDict[legVtSymbol] = legOrderList

@@ -1,1451 +1,1175 @@
 [
     {
-        "name": "TA.01-05",
-
-        "activeLeg": 
-            {
-                "vtSymbol": "TA901",
-                "ratio": 1,
-                "multiplier": 1.0,
-                "payup": 1
-            },
-
+        "activeLeg": {
+            "payup": 1, 
+            "ratio": 1, 
+            "vtSymbol": "FG905", 
+            "multiplier": 1.0
+        }, 
+        "name": "FG.05-09", 
         "passiveLegs": [
             {
-                "vtSymbol": "TA905",
-                "ratio": -1,
-                "multiplier": -1.0,
-                "payup": 1
-            }
-        ]
-    },
-    
-    {
-        "name": "TA.05-09",
-
-        "activeLeg": 
-            {
-                "vtSymbol": "TA905",
-                "ratio": 1,
-                "multiplier": 1.0,
-                "payup": 1
-            },
-
-        "passiveLegs": [
-            {
-                "vtSymbol": "TA909",
-                "ratio": -1,
-                "multiplier": -1,
-                "payup": 1
-            }
-        ]
-    },
-    
-    {
-        "name": "SR.01-05",
-
-        "activeLeg": 
-            {
-                "vtSymbol": "SR901",
-                "ratio": 1,
-                "multiplier": 1.0,
-                "payup": 1
-            },
-
-        "passiveLegs": [
-            {
-                "vtSymbol": "SR905",
-                "ratio": -1,
-                "multiplier": -1,
-                "payup": 1
-            }
-        ]
-    },
-    
-    {
-        "name": "SR.05-09",
-
-        "activeLeg": 
-            {
-                "vtSymbol": "SR905",
-                "ratio": 1,
-                "multiplier": 1.0,
-                "payup": 1
-            },
-
-        "passiveLegs": [
-            {
-                "vtSymbol": "SR909",
-                "ratio": -1,
-                "multiplier": -1.0,
-                "payup": 1
-            }
-        ]
-    },
-    
-    {
-        "name": "CF.01-05",
-
-        "activeLeg": 
-            {
-                "vtSymbol": "CF901",
-                "ratio": 1,
-                "multiplier": 1.0,
-                "payup": 1
-            },
-
-        "passiveLegs": [
-            {
-                "vtSymbol": "CF905",
-                "ratio": -1,
-                "multiplier": -1,
-                "payup": 1
-            }
-        ]
-    },
-    
-    {
-        "name": "CF.05-09",
-
-        "activeLeg": 
-            {
-                "vtSymbol": "CF905",
-                "ratio": 1,
-                "multiplier": 1.0,
-                "payup": 1
-            },
-
-        "passiveLegs": [
-            {
-                "vtSymbol": "CF909",
-                "ratio": -1,
-                "multiplier": -1,
-                "payup": 1
+                "payup": 1, 
+                "ratio": -1, 
+                "vtSymbol": "FG909", 
+                "multiplier": -1
             }
         ]
     }, 
-    
     {
-        "name": "FG.01-05",
-
-        "activeLeg": 
-            {
-                "vtSymbol": "FG901",
-                "ratio": 1,
-                "multiplier": 1.0,
-                "payup": 1
-            },
-
+        "activeLeg": {
+            "payup": 1, 
+            "ratio": 1, 
+            "vtSymbol": "p1905", 
+            "multiplier": 1.0
+        }, 
+        "name": "P.05-09", 
         "passiveLegs": [
             {
-                "vtSymbol": "FG905",
-                "ratio": -1,
-                "multiplier": -1.0,
-                "payup": 1
+                "payup": 1, 
+                "ratio": -1, 
+                "vtSymbol": "p1909", 
+                "multiplier": -1
             }
         ]
-    },
-    
+    }, 
     {
-        "name": "FG.05-09",
-
-        "activeLeg": 
-            {
-                "vtSymbol": "FG905",
-                "ratio": 1,
-                "multiplier": 1.0,
-                "payup": 1
-            },
-
+        "activeLeg": {
+            "payup": 1, 
+            "ratio": 1, 
+            "vtSymbol": "i1905", 
+            "multiplier": 1.0
+        }, 
+        "name": "I.05-09", 
         "passiveLegs": [
             {
-                "vtSymbol": "FG909",
-                "ratio": -1,
-                "multiplier": -1,
-                "payup": 1
+                "payup": 1, 
+                "ratio": -1, 
+                "vtSymbol": "i1909", 
+                "multiplier": -1
             }
         ]
-    },
-    
+    }, 
     {
-        "name": "MA.01-05",
-
-        "activeLeg": 
-            {
-                "vtSymbol": "MA901",
-                "ratio": 1,
-                "multiplier": 1.0,
-                "payup": 1
-            },
-
+        "activeLeg": {
+            "payup": 1, 
+            "ratio": 1, 
+            "vtSymbol": "RM901", 
+            "multiplier": 1.0
+        }, 
+        "name": "RMM.01-01", 
         "passiveLegs": [
             {
-                "vtSymbol": "MA905",
-                "ratio": -1,
-                "multiplier": -1,
-                "payup": 1
+                "payup": 1, 
+                "ratio": -1, 
+                "vtSymbol": "m1901", 
+                "multiplier": -1
             }
         ]
-    },
-    
+    }, 
     {
-        "name": "MA.05-09",
-
-        "activeLeg": 
-            {
-                "vtSymbol": "MA905",
-                "ratio": 1,
-                "multiplier": 1.0,
-                "payup": 1
-            },
-
+        "activeLeg": {
+            "payup": 1, 
+            "ratio": 1, 
+            "vtSymbol": "bb1905", 
+            "multiplier": 1.0
+        }, 
+        "name": "BB.05-09", 
         "passiveLegs": [
             {
-                "vtSymbol": "MA909",
-                "ratio": -1,
-                "multiplier": -1,
-                "payup": 1
+                "payup": 1, 
+                "ratio": -1, 
+                "vtSymbol": "bb1909", 
+                "multiplier": -1
             }
         ]
-    },
-    
+    }, 
     {
-        "name": "OI.01-05",
-
-        "activeLeg": 
-            {
-                "vtSymbol": "OI901",
-                "ratio": 1,
-                "multiplier": 1.0,
-                "payup": 1
-            },
-
+        "activeLeg": {
+            "payup": 1, 
+            "ratio": 1, 
+            "vtSymbol": "a1905", 
+            "multiplier": 1.0
+        }, 
+        "name": "A.05-09", 
         "passiveLegs": [
             {
-                "vtSymbol": "OI905",
-                "ratio": -1,
-                "multiplier": -1,
-                "payup": 1
+                "payup": 1, 
+                "ratio": -1, 
+                "vtSymbol": "a1909", 
+                "multiplier": -1
             }
         ]
-    },
-    
+    }, 
     {
-        "name": "OI.05-09",
-
-        "activeLeg": 
-            {
-                "vtSymbol": "OI905",
-                "ratio": 1,
-                "multiplier": 1.0,
-                "payup": 1
-            },
-
+        "activeLeg": {
+            "payup": 1, 
+            "ratio": 1, 
+            "vtSymbol": "ru1901", 
+            "multiplier": 1.0
+        }, 
+        "name": "RU.01-05", 
         "passiveLegs": [
             {
-                "vtSymbol": "OI909",
-                "ratio": -1,
-                "multiplier": -1,
-                "payup": 1
+                "payup": 1, 
+                "ratio": -1, 
+                "vtSymbol": "ru1905", 
+                "multiplier": -1
             }
         ]
-    },
-    
+    }, 
     {
-        "name": "RM.01-05",
-
-        "activeLeg": 
-            {
-                "vtSymbol": "RM901",
-                "ratio": 1,
-                "multiplier": 1.0,
-                "payup": 1
-            },
-
+        "activeLeg": {
+            "payup": 1, 
+            "ratio": 1, 
+            "vtSymbol": "OI905", 
+            "multiplier": 1.0
+        }, 
+        "name": "OIY.05-05", 
         "passiveLegs": [
             {
-                "vtSymbol": "RM905",
-                "ratio": -1,
-                "multiplier": -1,
-                "payup": 1
+                "payup": 1, 
+                "ratio": -1, 
+                "vtSymbol": "y1905", 
+                "multiplier": -1
             }
         ]
-    },
-    
+    }, 
     {
-        "name": "RM.05-09",
-
-        "activeLeg": 
-            {
-                "vtSymbol": "RM905",
-                "ratio": 1,
-                "multiplier": 1.0,
-                "payup": 1
-            },
-
+        "activeLeg": {
+            "payup": 1, 
+            "ratio": 1, 
+            "vtSymbol": "v1901", 
+            "multiplier": 1.0
+        }, 
+        "name": "V.01-05", 
         "passiveLegs": [
             {
-                "vtSymbol": "RM909",
-                "ratio": -1,
-                "multiplier": -1,
-                "payup": 1
+                "payup": 1, 
+                "ratio": -1, 
+                "vtSymbol": "v1905", 
+                "multiplier": -1
             }
         ]
-    },
-    
+    }, 
     {
-        "name": "ZC.01-05",
-
-        "activeLeg": 
-            {
-                "vtSymbol": "ZC901",
-                "ratio": 1,
-                "multiplier": 1.0,
-                "payup": 1
-            },
-
+        "activeLeg": {
+            "payup": 1, 
+            "ratio": 1, 
+            "vtSymbol": "y1901", 
+            "multiplier": 1.0
+        }, 
+        "name": "Y.01-05", 
         "passiveLegs": [
             {
-                "vtSymbol": "ZC905",
-                "ratio": -1,
-                "multiplier": -1,
-                "payup": 1
+                "payup": 1, 
+                "ratio": -1, 
+                "vtSymbol": "y1905", 
+                "multiplier": -1
             }
         ]
-    },
-    
+    }, 
     {
-        "name": "ZC.05-09",
-
-        "activeLeg": 
-            {
-                "vtSymbol": "ZC905",
-                "ratio": 1,
-                "multiplier": 1.0,
-                "payup": 1
-            },
-
+        "activeLeg": {
+            "payup": 1, 
+            "ratio": 1, 
+            "vtSymbol": "c1905", 
+            "multiplier": 1.0
+        }, 
+        "name": "CCS.05-05", 
         "passiveLegs": [
             {
-                "vtSymbol": "ZC909",
-                "ratio": -1,
-                "multiplier": -1,
-                "payup": 1
+                "payup": 1, 
+                "ratio": -1, 
+                "vtSymbol": "cs1905", 
+                "multiplier": -1
             }
         ]
-    },
-    
+    }, 
     {
-        "name": "A.01-05",
-
-        "activeLeg": 
-            {
-                "vtSymbol": "a1901",
-                "ratio": 1,
-                "multiplier": 1.0,
-                "payup": 1
-            },
-
+        "activeLeg": {
+            "payup": 1, 
+            "ratio": 1, 
+            "vtSymbol": "TA901", 
+            "multiplier": 1.0
+        }, 
+        "name": "TA.01-05", 
         "passiveLegs": [
             {
-                "vtSymbol": "a1905",
-                "ratio": -1,
-                "multiplier": -1,
-                "payup": 1
+                "payup": 1, 
+                "ratio": -1, 
+                "vtSymbol": "TA905", 
+                "multiplier": -1.0
             }
         ]
-    },
-    
+    }, 
     {
-        "name": "A.05-09",
-
-        "activeLeg": 
-            {
-                "vtSymbol": "a1905",
-                "ratio": 1,
-                "multiplier": 1.0,
-                "payup": 1
-            },
-
+        "activeLeg": {
+            "payup": 1, 
+            "ratio": 1, 
+            "vtSymbol": "SR901", 
+            "multiplier": 1.0
+        }, 
+        "name": "SR.01-05", 
         "passiveLegs": [
             {
-                "vtSymbol": "a1909",
-                "ratio": -1,
-                "multiplier": -1,
-                "payup": 1
+                "payup": 1, 
+                "ratio": -1, 
+                "vtSymbol": "SR905", 
+                "multiplier": -1
             }
         ]
-    },
-    
+    }, 
     {
-        "name": "M.01-05",
-
-        "activeLeg": 
-            {
-                "vtSymbol": "m1901",
-                "ratio": 1,
-                "multiplier": 1.0,
-                "payup": 1
-            },
-
+        "activeLeg": {
+            "payup": 1, 
+            "ratio": 1, 
+            "vtSymbol": "pp1905", 
+            "multiplier": 1.0
+        }, 
+        "name": "PPL.05-05", 
         "passiveLegs": [
             {
-                "vtSymbol": "m1905",
-                "ratio": -1,
-                "multiplier": -1,
-                "payup": 1
+                "payup": 1, 
+                "ratio": -1, 
+                "vtSymbol": "l1905", 
+                "multiplier": -1
             }
         ]
-    },
-    
+    }, 
     {
-        "name": "M.05-09",
-
-        "activeLeg": 
-            {
-                "vtSymbol": "m1905",
-                "ratio": 1,
-                "multiplier": 1.0,
-                "payup": 1
-            },
-
+        "activeLeg": {
+            "payup": 1, 
+            "ratio": 1, 
+            "vtSymbol": "l1901", 
+            "multiplier": 1.0
+        }, 
+        "name": "L.01-05", 
         "passiveLegs": [
             {
-                "vtSymbol": "m1909",
-                "ratio": -1,
-                "multiplier": -1,
-                "payup": 1
+                "payup": 1, 
+                "ratio": -1, 
+                "vtSymbol": "l1905", 
+                "multiplier": -1
             }
         ]
-    },
-    
+    }, 
     {
-        "name": "Y.01-05",
-
-        "activeLeg": 
-            {
-                "vtSymbol": "y1901",
-                "ratio": 1,
-                "multiplier": 1.0,
-                "payup": 1
-            },
-
+        "activeLeg": {
+            "payup": 1, 
+            "ratio": 1, 
+            "vtSymbol": "rb1901", 
+            "multiplier": 1.0
+        }, 
+        "name": "RBHC.01-01", 
         "passiveLegs": [
             {
-                "vtSymbol": "y1905",
-                "ratio": -1,
-                "multiplier": -1,
-                "payup": 1
+                "payup": 1, 
+                "ratio": -1, 
+                "vtSymbol": "hc1901", 
+                "multiplier": -1
             }
         ]
-    },
-    
+    }, 
     {
-        "name": "Y.05-09",
-
-        "activeLeg": 
-            {
-                "vtSymbol": "y1905",
-                "ratio": 1,
-                "multiplier": 1.0,
-                "payup": 1
-            },
-
+        "activeLeg": {
+            "payup": 1, 
+            "ratio": 1, 
+            "vtSymbol": "SR905", 
+            "multiplier": 1.0
+        }, 
+        "name": "SR.05-09", 
         "passiveLegs": [
             {
-                "vtSymbol": "y1909",
-                "ratio": -1,
-                "multiplier": -1,
-                "payup": 1
+                "payup": 1, 
+                "ratio": -1, 
+                "vtSymbol": "SR909", 
+                "multiplier": -1.0
             }
         ]
-    },
-    
+    }, 
     {
-        "name": "P.01-05",
-
-        "activeLeg": 
-            {
-                "vtSymbol": "p1901",
-                "ratio": 1,
-                "multiplier": 1.0,
-                "payup": 1
-            },
-
+        "activeLeg": {
+            "payup": 1, 
+            "ratio": 1, 
+            "vtSymbol": "bu1906", 
+            "multiplier": 1.0
+        }, 
+        "name": "BU.06-12", 
         "passiveLegs": [
             {
-                "vtSymbol": "p1905",
-                "ratio": -1,
-                "multiplier": -1,
-                "payup": 1
+                "payup": 1, 
+                "ratio": -1, 
+                "vtSymbol": "bu1912", 
+                "multiplier": -1
             }
         ]
-    },
-    
+    }, 
     {
-        "name": "P.05-09",
-
-        "activeLeg": 
-            {
-                "vtSymbol": "p1905",
-                "ratio": 1,
-                "multiplier": 1.0,
-                "payup": 1
-            },
-
+        "activeLeg": {
+            "payup": 1, 
+            "ratio": 1, 
+            "vtSymbol": "OI901", 
+            "multiplier": 1.0
+        }, 
+        "name": "OIY.01-01", 
         "passiveLegs": [
             {
-                "vtSymbol": "p1909",
-                "ratio": -1,
-                "multiplier": -1,
-                "payup": 1
+                "payup": 1, 
+                "ratio": -1, 
+                "vtSymbol": "y1901", 
+                "multiplier": -1
             }
         ]
-    },
-    
+    }, 
     {
-        "name": "C.01-05",
-
-        "activeLeg": 
-            {
-                "vtSymbol": "c1901",
-                "ratio": 1,
-                "multiplier": 1.0,
-                "payup": 1
-            },
-
+        "activeLeg": {
+            "payup": 1, 
+            "ratio": 1, 
+            "vtSymbol": "m1901", 
+            "multiplier": 1.0
+        }, 
+        "name": "M.01-05", 
         "passiveLegs": [
             {
-                "vtSymbol": "c1905",
-                "ratio": -1,
-                "multiplier": -1,
-                "payup": 1
+                "payup": 1, 
+                "ratio": -1, 
+                "vtSymbol": "m1905", 
+                "multiplier": -1
             }
         ]
-    },
-    
+    }, 
     {
-        "name": "C.05-09",
-
-        "activeLeg": 
-            {
-                "vtSymbol": "c1905",
-                "ratio": 1,
-                "multiplier": 1.0,
-                "payup": 1
-            },
-
+        "activeLeg": {
+            "payup": 1, 
+            "ratio": 1, 
+            "vtSymbol": "ZC901", 
+            "multiplier": 1.0
+        }, 
+        "name": "ZC.01-05", 
         "passiveLegs": [
             {
-                "vtSymbol": "c1909",
-                "ratio": -1,
-                "multiplier": -1,
-                "payup": 1
+                "payup": 1, 
+                "ratio": -1, 
+                "vtSymbol": "ZC905", 
+                "multiplier": -1
             }
         ]
-    },
-    
+    }, 
     {
-        "name": "I.01-05",
-
-        "activeLeg": 
-            {
-                "vtSymbol": "i1901",
-                "ratio": 1,
-                "multiplier": 1.0,
-                "payup": 1
-            },
-
+        "activeLeg": {
+            "payup": 1, 
+            "ratio": 1, 
+            "vtSymbol": "rb1901", 
+            "multiplier": 1.0
+        }, 
+        "name": "RB.01-05", 
         "passiveLegs": [
             {
-                "vtSymbol": "i1905",
-                "ratio": -1,
-                "multiplier": -1,
-                "payup": 1
+                "payup": 1, 
+                "ratio": -1, 
+                "vtSymbol": "rb1905", 
+                "multiplier": -1
             }
         ]
-    },
-    
+    }, 
     {
-        "name": "I.05-09",
-
-        "activeLeg": 
-            {
-                "vtSymbol": "i1905",
-                "ratio": 1,
-                "multiplier": 1.0,
-                "payup": 1
-            },
-
+        "activeLeg": {
+            "payup": 1, 
+            "ratio": 1, 
+            "vtSymbol": "RM905", 
+            "multiplier": 1.0
+        }, 
+        "name": "RMM.05-05", 
         "passiveLegs": [
             {
-                "vtSymbol": "i1909",
-                "ratio": -1,
-                "multiplier": -1,
-                "payup": 1
+                "payup": 1, 
+                "ratio": -1, 
+                "vtSymbol": "m1905", 
+                "multiplier": -1
             }
         ]
-    },
-    
+    }, 
     {
-        "name": "JM.01-05",
-
-        "activeLeg": 
-            {
-                "vtSymbol": "jm1901",
-                "ratio": 1,
-                "multiplier": 1.0,
-                "payup": 1
-            },
-
+        "activeLeg": {
+            "payup": 1, 
+            "ratio": 1, 
+            "vtSymbol": "c1901", 
+            "multiplier": 1.0
+        }, 
+        "name": "C.01-05", 
         "passiveLegs": [
             {
-                "vtSymbol": "jm1905",
-                "ratio": -1,
-                "multiplier": -1,
-                "payup": 1
+                "payup": 1, 
+                "ratio": -1, 
+                "vtSymbol": "c1905", 
+                "multiplier": -1
             }
         ]
-    },
-    
+    }, 
     {
-        "name": "JM.05-09",
-
-        "activeLeg": 
-            {
-                "vtSymbol": "jm1905",
-                "ratio": 1,
-                "multiplier": 1.0,
-                "payup": 1
-            },
-
+        "activeLeg": {
+            "payup": 1, 
+            "ratio": 1, 
+            "vtSymbol": "ZC905", 
+            "multiplier": 1.0
+        }, 
+        "name": "ZC.05-09", 
         "passiveLegs": [
             {
-                "vtSymbol": "jm1909",
-                "ratio": -1,
-                "multiplier": -1,
-                "payup": 1
+                "payup": 1, 
+                "ratio": -1, 
+                "vtSymbol": "ZC909", 
+                "multiplier": -1
             }
         ]
-    },
-    
+    }, 
     {
-        "name": "J.01-05",
-
-        "activeLeg": 
-            {
-                "vtSymbol": "j1901",
-                "ratio": 1,
-                "multiplier": 1.0,
-                "payup": 1
-            },
-
+        "activeLeg": {
+            "payup": 1, 
+            "ratio": 1, 
+            "vtSymbol": "OI905", 
+            "multiplier": 1.0
+        }, 
+        "name": "OI.05-09", 
         "passiveLegs": [
             {
-                "vtSymbol": "j1905",
-                "ratio": -1,
-                "multiplier": -1,
-                "payup": 1
+                "payup": 1, 
+                "ratio": -1, 
+                "vtSymbol": "OI909", 
+                "multiplier": -1
             }
         ]
-    },
-    
+    }, 
     {
-        "name": "J.05-09",
-
-        "activeLeg": 
-            {
-                "vtSymbol": "j1905",
-                "ratio": 1,
-                "multiplier": 1.0,
-                "payup": 1
-            },
-
+        "activeLeg": {
+            "payup": 1, 
+            "ratio": 1, 
+            "vtSymbol": "rb1905", 
+            "multiplier": 1.0
+        }, 
+        "name": "RBHC.05-05", 
         "passiveLegs": [
             {
-                "vtSymbol": "j1909",
-                "ratio": -1,
-                "multiplier": -1,
-                "payup": 1
+                "payup": 1, 
+                "ratio": -1, 
+                "vtSymbol": "hc1905", 
+                "multiplier": -1
             }
         ]
-    },
-    
+    }, 
     {
-        "name": "PP.01-05",
-
-        "activeLeg": 
-            {
-                "vtSymbol": "pp1901",
-                "ratio": 1,
-                "multiplier": 1.0,
-                "payup": 1
-            },
-
+        "activeLeg": {
+            "payup": 1, 
+            "ratio": 1, 
+            "vtSymbol": "RM905", 
+            "multiplier": 1.0
+        }, 
+        "name": "RM.05-09", 
         "passiveLegs": [
             {
-                "vtSymbol": "pp1905",
-                "ratio": -1,
-                "multiplier": -1,
-                "payup": 1
+                "payup": 1, 
+                "ratio": -1, 
+                "vtSymbol": "RM909", 
+                "multiplier": -1
             }
         ]
-    },
-    
+    }, 
     {
-        "name": "PP.05-09",
-
-        "activeLeg": 
-            {
-                "vtSymbol": "pp1905",
-                "ratio": 1,
-                "multiplier": 1.0,
-                "payup": 1
-            },
-
+        "activeLeg": {
+            "payup": 1, 
+            "ratio": 1, 
+            "vtSymbol": "rb1905", 
+            "multiplier": 1.0
+        }, 
+        "name": "RB.05-10", 
         "passiveLegs": [
             {
-                "vtSymbol": "pp1909",
-                "ratio": -1,
-                "multiplier": -1,
-                "payup": 1
+                "payup": 1, 
+                "ratio": -1, 
+                "vtSymbol": "rb1910", 
+                "multiplier": -1
             }
         ]
-    },
-    
+    }, 
     {
-        "name": "L.01-05",
-
-        "activeLeg": 
-            {
-                "vtSymbol": "l1901",
-                "ratio": 1,
-                "multiplier": 1.0,
-                "payup": 1
-            },
-
+        "activeLeg": {
+            "payup": 1, 
+            "ratio": 1, 
+            "vtSymbol": "y1905", 
+            "multiplier": 1.0
+        }, 
+        "name": "YP.05-05", 
         "passiveLegs": [
             {
-                "vtSymbol": "l1905",
-                "ratio": -1,
-                "multiplier": -1,
-                "payup": 1
+                "payup": 1, 
+                "ratio": -1, 
+                "vtSymbol": "p1905", 
+                "multiplier": -1
             }
         ]
-    },
-    
+    }, 
     {
-        "name": "L.05-09",
-
-        "activeLeg": 
-            {
-                "vtSymbol": "l1905",
-                "ratio": 1,
-                "multiplier": 1.0,
-                "payup": 1
-            },
-
+        "activeLeg": {
+            "payup": 1, 
+            "ratio": 1, 
+            "vtSymbol": "cs1901", 
+            "multiplier": 1.0
+        }, 
+        "name": "CS.01-05", 
         "passiveLegs": [
             {
-                "vtSymbol": "l1909",
-                "ratio": -1,
-                "multiplier": -1,
-                "payup": 1
+                "payup": 1, 
+                "ratio": -1, 
+                "vtSymbol": "cs1905", 
+                "multiplier": -1
             }
         ]
-    },
-    
+    }, 
     {
-        "name": "V.01-05",
-
-        "activeLeg": 
-            {
-                "vtSymbol": "v1901",
-                "ratio": 1,
-                "multiplier": 1.0,
-                "payup": 1
-            },
-
+        "activeLeg": {
+            "payup": 1, 
+            "ratio": 1, 
+            "vtSymbol": "j1905", 
+            "multiplier": 1.0
+        }, 
+        "name": "JJM.05-05", 
         "passiveLegs": [
             {
-                "vtSymbol": "v1905",
-                "ratio": -1,
-                "multiplier": -1,
-                "payup": 1
+                "payup": 1, 
+                "ratio": -1, 
+                "vtSymbol": "jm1905", 
+                "multiplier": -1
             }
         ]
-    },
-    
+    }, 
     {
-        "name": "V.05-09",
-
-        "activeLeg": 
-            {
-                "vtSymbol": "v1905",
-                "ratio": 1,
-                "multiplier": 1.0,
-                "payup": 1
-            },
-
+        "activeLeg": {
+            "payup": 1, 
+            "ratio": 1, 
+            "vtSymbol": "ag1901", 
+            "multiplier": 1.0
+        }, 
+        "name": "AG.01-06", 
         "passiveLegs": [
             {
-                "vtSymbol": "v1909",
-                "ratio": -1,
-                "multiplier": -1,
-                "payup": 1
+                "payup": 1, 
+                "ratio": -1, 
+                "vtSymbol": "ag1906", 
+                "multiplier": -1
             }
         ]
-    },
-    
+    }, 
     {
-        "name": "JD.01-05",
-
-        "activeLeg": 
-            {
-                "vtSymbol": "jd1901",
-                "ratio": 1,
-                "multiplier": 1.0,
-                "payup": 1
-            },
-
+        "activeLeg": {
+            "payup": 1, 
+            "ratio": 1, 
+            "vtSymbol": "a1901", 
+            "multiplier": 1.0
+        }, 
+        "name": "A.01-05", 
         "passiveLegs": [
             {
-                "vtSymbol": "jd1905",
-                "ratio": -1,
-                "multiplier": -1,
-                "payup": 1
+                "payup": 1, 
+                "ratio": -1, 
+                "vtSymbol": "a1905", 
+                "multiplier": -1
             }
         ]
-    },
-    
+    }, 
     {
-        "name": "JD.05-09",
-
-        "activeLeg": 
-            {
-                "vtSymbol": "jd1905",
-                "ratio": 1,
-                "multiplier": 1.0,
-                "payup": 1
-            },
-
+        "activeLeg": {
+            "payup": 1, 
+            "ratio": 1, 
+            "vtSymbol": "l1905", 
+            "multiplier": 1.0
+        }, 
+        "name": "L.05-09", 
         "passiveLegs": [
             {
-                "vtSymbol": "jd1909",
-                "ratio": -1,
-                "multiplier": -1,
-                "payup": 1
+                "payup": 1, 
+                "ratio": -1, 
+                "vtSymbol": "l1909", 
+                "multiplier": -1
             }
         ]
-    },
-    
+    }, 
     {
-        "name": "FB.01-05",
-
-        "activeLeg": 
-            {
-                "vtSymbol": "fb1901",
-                "ratio": 1,
-                "multiplier": 1.0,
-                "payup": 1
-            },
-
+        "activeLeg": {
+            "payup": 1, 
+            "ratio": 1, 
+            "vtSymbol": "FG901", 
+            "multiplier": 1.0
+        }, 
+        "name": "FG.01-05", 
         "passiveLegs": [
             {
-                "vtSymbol": "fb1905",
-                "ratio": -1,
-                "multiplier": -1,
-                "payup": 1
+                "payup": 1, 
+                "ratio": -1, 
+                "vtSymbol": "FG905", 
+                "multiplier": -1.0
             }
         ]
-    },
-    
+    }, 
     {
-        "name": "FB.05-09",
-
-        "activeLeg": 
-            {
-                "vtSymbol": "fb1905",
-                "ratio": 1,
-                "multiplier": 1.0,
-                "payup": 1
-            },
-
+        "activeLeg": {
+            "payup": 1, 
+            "ratio": 1, 
+            "vtSymbol": "ru1905", 
+            "multiplier": 1.0
+        }, 
+        "name": "RU.05-09", 
         "passiveLegs": [
             {
-                "vtSymbol": "fb1909",
-                "ratio": -1,
-                "multiplier": -1,
-                "payup": 1
+                "payup": 1, 
+                "ratio": -1, 
+                "vtSymbol": "ru1909", 
+                "multiplier": -1
             }
         ]
-    },
-    
+    }, 
     {
-        "name": "BB.01-05",
-
-        "activeLeg": 
-            {
-                "vtSymbol": "bb1901",
-                "ratio": 1,
-                "multiplier": 1.0,
-                "payup": 1
-            },
-
+        "activeLeg": {
+            "payup": 1, 
+            "ratio": 1, 
+            "vtSymbol": "i1901", 
+            "multiplier": 1.0
+        }, 
+        "name": "I.01-05", 
         "passiveLegs": [
             {
-                "vtSymbol": "bb1905",
-                "ratio": -1,
-                "multiplier": -1,
-                "payup": 1
+                "payup": 1, 
+                "ratio": -1, 
+                "vtSymbol": "i1905", 
+                "multiplier": -1
             }
         ]
-    },
-    
+    }, 
     {
-        "name": "BB.05-09",
-
-        "activeLeg": 
-            {
-                "vtSymbol": "bb1905",
-                "ratio": 1,
-                "multiplier": 1.0,
-                "payup": 1
-            },
-
+        "activeLeg": {
+            "payup": 1, 
+            "ratio": 1, 
+            "vtSymbol": "CF901", 
+            "multiplier": 1.0
+        }, 
+        "name": "CF.01-05", 
         "passiveLegs": [
             {
-                "vtSymbol": "bb1909",
-                "ratio": -1,
-                "multiplier": -1,
-                "payup": 1
+                "payup": 1, 
+                "ratio": -1, 
+                "vtSymbol": "CF905", 
+                "multiplier": -1
             }
         ]
-    },
-    
+    }, 
     {
-        "name": "CS.01-05",
-
-        "activeLeg": 
-            {
-                "vtSymbol": "cs1901",
-                "ratio": 1,
-                "multiplier": 1.0,
-                "payup": 1
-            },
-
+        "activeLeg": {
+            "payup": 1, 
+            "ratio": 1, 
+            "vtSymbol": "pp1901", 
+            "multiplier": 1.0
+        }, 
+        "name": "PP.01-05", 
         "passiveLegs": [
             {
-                "vtSymbol": "cs1905",
-                "ratio": -1,
-                "multiplier": -1,
-                "payup": 1
+                "payup": 1, 
+                "ratio": -1, 
+                "vtSymbol": "pp1905", 
+                "multiplier": -1
             }
         ]
-    },
-    
+    }, 
     {
-        "name": "CS.05-09",
-
-        "activeLeg": 
-            {
-                "vtSymbol": "cs1905",
-                "ratio": 1,
-                "multiplier": 1.0,
-                "payup": 1
-            },
-
+        "activeLeg": {
+            "payup": 1, 
+            "ratio": 1, 
+            "vtSymbol": "TA905", 
+            "multiplier": 1.0
+        }, 
+        "name": "TA.05-09", 
         "passiveLegs": [
             {
-                "vtSymbol": "cs1909",
-                "ratio": -1,
-                "multiplier": -1,
-                "payup": 1
+                "payup": 1, 
+                "ratio": -1, 
+                "vtSymbol": "TA909", 
+                "multiplier": -1
             }
         ]
-    },
-    
+    }, 
     {
-        "name": "HC.01-05",
-
-        "activeLeg": 
-            {
-                "vtSymbol": "hc1901",
-                "ratio": 1,
-                "multiplier": 1.0,
-                "payup": 1
-            },
-
+        "activeLeg": {
+            "payup": 1, 
+            "ratio": 1, 
+            "vtSymbol": "hc1901", 
+            "multiplier": 1.0
+        }, 
+        "name": "HC.01-05", 
         "passiveLegs": [
             {
-                "vtSymbol": "hc1905",
-                "ratio": -1,
-                "multiplier": -1,
-                "payup": 1
+                "payup": 1, 
+                "ratio": -1, 
+                "vtSymbol": "hc1905", 
+                "multiplier": -1
             }
         ]
-    },
-    
+    }, 
     {
-        "name": "HC.05-10",
-
-        "activeLeg": 
-            {
-                "vtSymbol": "hc1905",
-                "ratio": 1,
-                "multiplier": 1.0,
-                "payup": 1
-            },
-
+        "activeLeg": {
+            "payup": 1, 
+            "ratio": 1, 
+            "vtSymbol": "j1901", 
+            "multiplier": 1.0
+        }, 
+        "name": "J.01-05", 
         "passiveLegs": [
             {
-                "vtSymbol": "hc1910",
-                "ratio": -1,
-                "multiplier": -1,
-                "payup": 1
+                "payup": 1, 
+                "ratio": -1, 
+                "vtSymbol": "j1905", 
+                "multiplier": -1
             }
         ]
-    },
-    
+    }, 
     {
-        "name": "RB.01-05",
-
-        "activeLeg": 
-            {
-                "vtSymbol": "rb1901",
-                "ratio": 1,
-                "multiplier": 1.0,
-                "payup": 1
-            },
-
+        "activeLeg": {
+            "payup": 1, 
+            "ratio": 1, 
+            "vtSymbol": "p1901", 
+            "multiplier": 1.0
+        }, 
+        "name": "P.01-05", 
         "passiveLegs": [
             {
-                "vtSymbol": "rb1905",
-                "ratio": -1,
-                "multiplier": -1,
-                "payup": 1
+                "payup": 1, 
+                "ratio": -1, 
+                "vtSymbol": "p1905", 
+                "multiplier": -1
             }
         ]
-    },
-    
+    }, 
     {
-        "name": "RB.05-10",
-
-        "activeLeg": 
-            {
-                "vtSymbol": "rb1905",
-                "ratio": 1,
-                "multiplier": 1.0,
-                "payup": 1
-            },
-
+        "activeLeg": {
+            "payup": 1, 
+            "ratio": 1, 
+            "vtSymbol": "CF905", 
+            "multiplier": 1.0
+        }, 
+        "name": "CF.05-09", 
         "passiveLegs": [
             {
-                "vtSymbol": "rb1910",
-                "ratio": -1,
-                "multiplier": -1,
-                "payup": 1
+                "payup": 1, 
+                "ratio": -1, 
+                "vtSymbol": "CF909", 
+                "multiplier": -1
             }
         ]
-    },
-    
+    }, 
     {
-        "name": "RU.01-05",
-
-        "activeLeg": 
-            {
-                "vtSymbol": "ru1901",
-                "ratio": 1,
-                "multiplier": 1.0,
-                "payup": 1
-            },
-
+        "activeLeg": {
+            "payup": 1, 
+            "ratio": 1, 
+            "vtSymbol": "fb1905", 
+            "multiplier": 1.0
+        }, 
+        "name": "FB.05-09", 
         "passiveLegs": [
             {
-                "vtSymbol": "ru1905",
-                "ratio": -1,
-                "multiplier": -1,
-                "payup": 1
+                "payup": 1, 
+                "ratio": -1, 
+                "vtSymbol": "fb1909", 
+                "multiplier": -1
             }
         ]
-    },
-    
+    }, 
     {
-        "name": "RU.05-09",
-
-        "activeLeg": 
-            {
-                "vtSymbol": "ru1905",
-                "ratio": 1,
-                "multiplier": 1.0,
-                "payup": 1
-            },
-
+        "activeLeg": {
+            "payup": 1, 
+            "ratio": 1, 
+            "vtSymbol": "c1901", 
+            "multiplier": 1.0
+        }, 
+        "name": "CCS.01-01", 
         "passiveLegs": [
             {
-                "vtSymbol": "ru1909",
-                "ratio": -1,
-                "multiplier": -1,
-                "payup": 1
+                "payup": 1, 
+                "ratio": -1, 
+                "vtSymbol": "c1901", 
+                "multiplier": -1
             }
         ]
-    },
-    
+    }, 
     {
-        "name": "BU.06-12",
-
-        "activeLeg": 
-            {
-                "vtSymbol": "bu1906",
-                "ratio": 1,
-                "multiplier": 1.0,
-                "payup": 1
-            },
-
+        "activeLeg": {
+            "payup": 1, 
+            "ratio": 1, 
+            "vtSymbol": "jd1901", 
+            "multiplier": 1.0
+        }, 
+        "name": "JD.01-05", 
         "passiveLegs": [
             {
-                "vtSymbol": "bu1912",
-                "ratio": -1,
-                "multiplier": -1,
-                "payup": 1
+                "payup": 1, 
+                "ratio": -1, 
+                "vtSymbol": "jd1905", 
+                "multiplier": -1
             }
         ]
-    },
-    
+    }, 
     {
-        "name": "AU.04-06",
-
-        "activeLeg": 
-            {
-                "vtSymbol": "au1904",
-                "ratio": 1,
-                "multiplier": 1.0,
-                "payup": 1
-            },
-
+        "activeLeg": {
+            "payup": 1, 
+            "ratio": 1, 
+            "vtSymbol": "y1901", 
+            "multiplier": 1.0
+        }, 
+        "name": "YP.01-01", 
         "passiveLegs": [
             {
-                "vtSymbol": "au1906",
-                "ratio": -1,
-                "multiplier": -1,
-                "payup": 1
+                "payup": 1, 
+                "ratio": -1, 
+                "vtSymbol": "p1901", 
+                "multiplier": -1
             }
         ]
-    },
-    
+    }, 
     {
-        "name": "AG.01-06",
-
-        "activeLeg": 
-            {
-                "vtSymbol": "ag1901",
-                "ratio": 1,
-                "multiplier": 1.0,
-                "payup": 1
-            },
-
+        "activeLeg": {
+            "payup": 1, 
+            "ratio": 1, 
+            "vtSymbol": "m1905", 
+            "multiplier": 1.0
+        }, 
+        "name": "M.05-09", 
         "passiveLegs": [
             {
-                "vtSymbol": "ag1906",
-                "ratio": -1,
-                "multiplier": -1,
-                "payup": 1
+                "payup": 1, 
+                "ratio": -1, 
+                "vtSymbol": "m1909", 
+                "multiplier": -1
             }
         ]
-    },
-    
+    }, 
     {
-        "name": "JJM.01-01",
-
-        "activeLeg": 
-            {
-                "vtSymbol": "j1901",
-                "ratio": 1,
-                "multiplier": 1.0,
-                "payup": 1
-            },
-
+        "activeLeg": {
+            "payup": 1, 
+            "ratio": 1, 
+            "vtSymbol": "hc1905", 
+            "multiplier": 1.0
+        }, 
+        "name": "HC.05-10", 
         "passiveLegs": [
             {
-                "vtSymbol": "jm1901",
-                "ratio": -1,
-                "multiplier": -1,
-                "payup": 1
+                "payup": 1, 
+                "ratio": -1, 
+                "vtSymbol": "hc1910", 
+                "multiplier": -1
             }
         ]
-    },
-    
+    }, 
     {
-        "name": "JJM.05-05",
-
-        "activeLeg": 
-            {
-                "vtSymbol": "j1905",
-                "ratio": 1,
-                "multiplier": 1.0,
-                "payup": 1
-            },
-
+        "activeLeg": {
+            "payup": 1, 
+            "ratio": 1, 
+            "vtSymbol": "OI901", 
+            "multiplier": 1.0
+        }, 
+        "name": "OI.01-05", 
         "passiveLegs": [
             {
-                "vtSymbol": "jm1905",
-                "ratio": -1,
-                "multiplier": -1,
-                "payup": 1
+                "payup": 1, 
+                "ratio": -1, 
+                "vtSymbol": "OI905", 
+                "multiplier": -1
             }
         ]
-    },
-    
+    }, 
     {
-        "name": "CCS.01-01",
-
-        "activeLeg": 
-            {
-                "vtSymbol": "c1901",
-                "ratio": 1,
-                "multiplier": 1.0,
-                "payup": 1
-            },
-
+        "activeLeg": {
+            "payup": 1, 
+            "ratio": 1, 
+            "vtSymbol": "pp1905", 
+            "multiplier": 1.0
+        }, 
+        "name": "PP.05-09", 
         "passiveLegs": [
             {
-                "vtSymbol": "c1901",
-                "ratio": -1,
-                "multiplier": -1,
-                "payup": 1
+                "payup": 1, 
+                "ratio": -1, 
+                "vtSymbol": "pp1909", 
+                "multiplier": -1
             }
         ]
-    },
-    
+    }, 
     {
-        "name": "CCS.05-05",
-
-        "activeLeg": 
-            {
-                "vtSymbol": "c1905",
-                "ratio": 1,
-                "multiplier": 1.0,
-                "payup": 1
-            },
-
+        "activeLeg": {
+            "payup": 1, 
+            "ratio": 1, 
+            "vtSymbol": "j1901", 
+            "multiplier": 1.0
+        }, 
+        "name": "JJM.01-01", 
         "passiveLegs": [
             {
-                "vtSymbol": "cs1905",
-                "ratio": -1,
-                "multiplier": -1,
-                "payup": 1
+                "payup": 1, 
+                "ratio": -1, 
+                "vtSymbol": "jm1901", 
+                "multiplier": -1
             }
         ]
-    },
-    
+    }, 
     {
-        "name": "RMM.01-01",
-
-        "activeLeg": 
-            {
-                "vtSymbol": "RM901",
-                "ratio": 1,
-                "multiplier": 1.0,
-                "payup": 1
-            },
-
+        "activeLeg": {
+            "payup": 1, 
+            "ratio": 1, 
+            "vtSymbol": "MA901", 
+            "multiplier": 1.0
+        }, 
+        "name": "MA.01-05", 
         "passiveLegs": [
             {
-                "vtSymbol": "m1901",
-                "ratio": -1,
-                "multiplier": -1,
-                "payup": 1
+                "payup": 1, 
+                "ratio": -1, 
+                "vtSymbol": "MA905", 
+                "multiplier": -1
             }
         ]
-    },
-    
+    }, 
     {
-        "name": "RMM.05-05",
-
-        "activeLeg": 
-            {
-                "vtSymbol": "RM905",
-                "ratio": 1,
-                "multiplier": 1.0,
-                "payup": 1
-            },
-
+        "activeLeg": {
+            "payup": 1, 
+            "ratio": 1, 
+            "vtSymbol": "v1905", 
+            "multiplier": 1.0
+        }, 
+        "name": "V.05-09", 
         "passiveLegs": [
             {
-                "vtSymbol": "m1905",
-                "ratio": -1,
-                "multiplier": -1,
-                "payup": 1
+                "payup": 1, 
+                "ratio": -1, 
+                "vtSymbol": "v1909", 
+                "multiplier": -1
             }
         ]
-    },
-    
+    }, 
     {
-        "name": "OIY.01-01",
-
-        "activeLeg": 
-            {
-                "vtSymbol": "OI901",
-                "ratio": 1,
-                "multiplier": 1.0,
-                "payup": 1
-            },
-
+        "activeLeg": {
+            "payup": 1, 
+            "ratio": 1, 
+            "vtSymbol": "cs1905", 
+            "multiplier": 1.0
+        }, 
+        "name": "CS.05-09", 
         "passiveLegs": [
             {
-                "vtSymbol": "y1901",
-                "ratio": -1,
-                "multiplier": -1,
-                "payup": 1
+                "payup": 1, 
+                "ratio": -1, 
+                "vtSymbol": "cs1909", 
+                "multiplier": -1
             }
         ]
-    },
-    
+    }, 
     {
-        "name": "OIY.05-05",
-
-        "activeLeg": 
-            {
-                "vtSymbol": "OI905",
-                "ratio": 1,
-                "multiplier": 1.0,
-                "payup": 1
-            },
-
+        "activeLeg": {
+            "payup": 1, 
+            "ratio": 1, 
+            "vtSymbol": "jm1905", 
+            "multiplier": 1.0
+        }, 
+        "name": "JM.05-09", 
         "passiveLegs": [
             {
-                "vtSymbol": "y1905",
-                "ratio": -1,
-                "multiplier": -1,
-                "payup": 1
+                "payup": 1, 
+                "ratio": -1, 
+                "vtSymbol": "jm1909", 
+                "multiplier": -1
             }
         ]
-    },
-    
+    }, 
     {
-        "name": "YP.01-01",
-
-        "activeLeg": 
-            {
-                "vtSymbol": "y1901",
-                "ratio": 1,
-                "multiplier": 1.0,
-                "payup": 1
-            },
-
+        "activeLeg": {
+            "payup": 1, 
+            "ratio": 1, 
+            "vtSymbol": "j1905", 
+            "multiplier": 1.0
+        }, 
+        "name": "J.05-09", 
         "passiveLegs": [
             {
-                "vtSymbol": "p1901",
-                "ratio": -1,
-                "multiplier": -1,
-                "payup": 1
+                "payup": 1, 
+                "ratio": -1, 
+                "vtSymbol": "j1909", 
+                "multiplier": -1
             }
         ]
-    },
-    
+    }, 
     {
-        "name": "YP.05-05",
-
-        "activeLeg": 
-            {
-                "vtSymbol": "y1905",
-                "ratio": 1,
-                "multiplier": 1.0,
-                "payup": 1
-            },
-
+        "activeLeg": {
+            "payup": 1, 
+            "ratio": 1, 
+            "vtSymbol": "fb1901", 
+            "multiplier": 1.0
+        }, 
+        "name": "FB.01-05", 
         "passiveLegs": [
             {
-                "vtSymbol": "p1905",
-                "ratio": -1,
-                "multiplier": -1,
-                "payup": 1
+                "payup": 1, 
+                "ratio": -1, 
+                "vtSymbol": "fb1905", 
+                "multiplier": -1
             }
         ]
-    },
-    
+    }, 
     {
-        "name": "PPL.01-01",
-
-        "activeLeg": 
-            {
-                "vtSymbol": "pp1901",
-                "ratio": 1,
-                "multiplier": 1.0,
-                "payup": 1
-            },
-
+        "activeLeg": {
+            "payup": 1, 
+            "ratio": 1, 
+            "vtSymbol": "jd1905", 
+            "multiplier": 1.0
+        }, 
+        "name": "JD.05-09", 
         "passiveLegs": [
             {
-                "vtSymbol": "l1901",
-                "ratio": -1,
-                "multiplier": -1,
-                "payup": 1
+                "payup": 1, 
+                "ratio": -1, 
+                "vtSymbol": "jd1909", 
+                "multiplier": -1
             }
         ]
-    },
-    
+    }, 
     {
-        "name": "PPL.05-05",
-
-        "activeLeg": 
-            {
-                "vtSymbol": "pp1905",
-                "ratio": 1,
-                "multiplier": 1.0,
-                "payup": 1
-            },
-
+        "activeLeg": {
+            "payup": 1, 
+            "ratio": 1, 
+            "vtSymbol": "jm1901", 
+            "multiplier": 1.0
+        }, 
+        "name": "JM.01-05", 
         "passiveLegs": [
             {
-                "vtSymbol": "l1905",
-                "ratio": -1,
-                "multiplier": -1,
-                "payup": 1
+                "payup": 1, 
+                "ratio": -1, 
+                "vtSymbol": "jm1905", 
+                "multiplier": -1
             }
         ]
-    },
-    
+    }, 
     {
-        "name": "RBHC.01-01",
-
-        "activeLeg": 
-            {
-                "vtSymbol": "rb1901",
-                "ratio": 1,
-                "multiplier": 1.0,
-                "payup": 1
-            },
-
+        "activeLeg": {
+            "payup": 1, 
+            "ratio": 1, 
+            "vtSymbol": "y1905", 
+            "multiplier": 1.0
+        }, 
+        "name": "Y.05-09", 
         "passiveLegs": [
             {
-                "vtSymbol": "hc1901",
-                "ratio": -1,
-                "multiplier": -1,
-                "payup": 1
+                "payup": 1, 
+                "ratio": -1, 
+                "vtSymbol": "y1909", 
+                "multiplier": -1
             }
         ]
-    },
-    
+    }, 
     {
-        "name": "RBHC.05-05",
-
-        "activeLeg": 
-            {
-                "vtSymbol": "rb1905",
-                "ratio": 1,
-                "multiplier": 1.0,
-                "payup": 1
-            },
-
+        "activeLeg": {
+            "payup": 1, 
+            "ratio": 1, 
+            "vtSymbol": "pp1901", 
+            "multiplier": 1.0
+        }, 
+        "name": "PPL.01-01", 
         "passiveLegs": [
             {
-                "vtSymbol": "hc1905",
-                "ratio": -1,
-                "multiplier": -1,
-                "payup": 1
+                "payup": 1, 
+                "ratio": -1, 
+                "vtSymbol": "l1901", 
+                "multiplier": -1
+            }
+        ]
+    }, 
+    {
+        "activeLeg": {
+            "payup": 1, 
+            "ratio": 1, 
+            "vtSymbol": "au1904", 
+            "multiplier": 1.0
+        }, 
+        "name": "AU.04-06", 
+        "passiveLegs": [
+            {
+                "payup": 1, 
+                "ratio": -1, 
+                "vtSymbol": "au1906", 
+                "multiplier": -1
+            }
+        ]
+    }, 
+    {
+        "activeLeg": {
+            "payup": 1, 
+            "ratio": 1, 
+            "vtSymbol": "MA905", 
+            "multiplier": 1.0
+        }, 
+        "name": "MA.05-09", 
+        "passiveLegs": [
+            {
+                "payup": 1, 
+                "ratio": -1, 
+                "vtSymbol": "MA909", 
+                "multiplier": -1
+            }
+        ]
+    }, 
+    {
+        "activeLeg": {
+            "payup": 1, 
+            "ratio": 1, 
+            "vtSymbol": "bb1901", 
+            "multiplier": 1.0
+        }, 
+        "name": "BB.01-05", 
+        "passiveLegs": [
+            {
+                "payup": 1, 
+                "ratio": -1, 
+                "vtSymbol": "bb1905", 
+                "multiplier": -1
+            }
+        ]
+    }, 
+    {
+        "activeLeg": {
+            "payup": 1, 
+            "ratio": 1, 
+            "vtSymbol": "RM901", 
+            "multiplier": 1.0
+        }, 
+        "name": "RM.01-05", 
+        "passiveLegs": [
+            {
+                "payup": 1, 
+                "ratio": -1, 
+                "vtSymbol": "RM905", 
+                "multiplier": -1
+            }
+        ]
+    }, 
+    {
+        "activeLeg": {
+            "payup": 1, 
+            "ratio": 1, 
+            "vtSymbol": "c1905", 
+            "multiplier": 1.0
+        }, 
+        "name": "C.05-09", 
+        "passiveLegs": [
+            {
+                "payup": 1, 
+                "ratio": -1, 
+                "vtSymbol": "c1909", 
+                "multiplier": -1
             }
         ]
     }
-    
 ]
