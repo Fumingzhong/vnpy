@@ -6,6 +6,7 @@ from datetime import datetime
 
 from vnpy.trader.vtConstant import (EMPTY_INT, EMPTY_FLOAT, 
                                     EMPTY_STRING, EMPTY_UNICODE)
+from vnpy.trader.vtConstant import DIRECTION_LONG, DIRECTION_SHORT
 
 
 EVENT_MULTITRADING_TICK = 'eMultiTradingTick'
@@ -15,6 +16,189 @@ EVENT_MULTITRADING_ALGO = 'eMultiTradingAlgo'
 EVENT_MULTITRADING_ALGOLOG = 'eMultiTradingAlogLog'
 
 
+########################################################################
+class zfmLegPos(object):
+    """腿持仓信息"""
+
+    #----------------------------------------------------------------------
+    def __init__(self, longPos=0, shortPos=0, posPrice=0, tradingPnl=0, positionPnl=0, totalPnl=0, turnover=0, commission=0, slippage=0, netPnl=0):
+        """Constructor"""
+        self.vtSymbol = EMPTY_STRING
+        self.longPos = longPos
+        self.shortPos = shortPos
+        self.netPos = longPos - shortPos
+        
+        self.posPrice = posPrice             
+        self.closePrice = EMPTY_FLOAT
+        
+        self.tradingPnl = EMPTY_FLOAT
+        self.positionPnl = EMPTY_FLOAT
+        self.totalPnl = EMPTY_FLOAT
+        
+        self.turnover = 0
+        self.commission = 0
+        self.slippage = 0 
+        self.netPnl = 0 
+        
+        self.longTrade = 0
+        self.shortTrade = 0
+        
+    #----------------------------------------------------------------------
+    def update(self, trade):
+        """汇总多单成交和空单成交"""
+        if trade.direction == DIRECTION_LONG:
+            if not self.longTrade:
+                self.longTrade = trade
+            else:
+                self.longTrade.price = (self.longTrade.volume * self.longTrade.price + trade.volume * trade.price)/(self.longTrade.volume + trade.volume)
+                self.longTrade.price = round(self.longTrade.price, 2)
+                self.longTrade.volume += trade.volume
+                self.longTrade.tradeTime = trade.tradeTime                
+        else:
+            if not self.shortTrade:
+                self.shortTrade = trade
+            else:
+                self.shortTrade.price = (self.shortTrade.volume * self.shortTrade.price + trade.volume * trade.price)/(self.shortTrade.volume + trade.volume)
+                self.shortTrade.price = round(self.shortTrade.price, 2)
+                self.shortTrade.volume += trade.volume
+                self.shortTrade.tradeTime = trade.tradeTime
+    
+    #----------------------------------------------------------------------
+    def calculatePnl(self, closePrice, size=1, rate=0, slippage=0):
+        """计算盈亏"""
+        self.closePrice = closePrice
+        # 多头部分
+        if not self.longTrade:
+            pass
+        else:
+            self.longPos += self.longTrade.volume
+            self.turnover += self.longTrade.volume * size * self.longTrade.price
+            self.slippage += self.longTrade.volume * size * slippage
+            self.commission += self.longTrade.volume * size * self.longTrade.price * rate
+            if self.netPos > 0:
+                self.posPrice = (self.netPos * self.posPrice + self.longTrade.volume * self.longTrade.price)/(self.netPos + self.longTrade.volume)
+                self.posPrice = round(self.posPrice, 2)
+                self.positionPnl = (self.netPos + self.longTrade.volume) * (self.closePrice - self.posPrice) * size
+                
+            elif self.netPos < 0:
+                if self.longTrade.volume + self.netPos > 0:
+                    self.tradingPnl += self.netPos * (self.longTrade.price - self.posPrice) * size
+                    self.posPrice = self.longTrade.price
+                    self.positionPnl = (self.longTrade.volume + self.netPos) * (self.closePrice - self.posPrice) * size
+                    
+                elif self.longTrade.volume + self.netPos < 0:
+                    self.tradingPnl += self.longTrade.volume * (self.posPrice - self.longTrade.volume) * size
+                    self.positionPnl = (self.longTrade.volume + self.netPos) * (self.closePrice - self.posPrice) * size
+                    
+                else:
+                    self.tradingPnl += self.longTrade.volume * (self.posPrice - self.longTrade.price) * size
+                    self.posPrice = 0
+                    self.positionPnl = 0
+                    
+            else:
+                self.posPrice = self.longTrade.price
+                self.positionPnl = self.longTrade.volume * (self.closePrice - self.longTrade.price) * size
+                
+            self.netPos += self.longTrade.volume
+            # 计算完之后成交清零
+            self.longTrade = 0
+                                            
+        # 空头部分
+        if not self.shortTrade:
+            pass
+        else:
+            self.shortPos += self.shortTrade.volume
+            self.turnover += self.shortTrade.volume * size * self.shortTrade.price
+            self.slippage += self.shortTrade.volume * size * slippage
+            self.commission += self.shortTrade.volume * size * self.shortTrade.price * rate
+            if self.netPos < 0:
+                self.posPrice = (self.netPos * self.posPrice - self.shortTrade.volume * self.shortTrade.price) / (self.netPos - self.shortTrade.volume)
+                self.posPrice = round(self.posPrice, 2)
+                self.positionPnl = (self.netPos - self.shortTrade.volume) * (self.closePrice - self.posPrice) * size
+            elif self.netPos > 0:
+                if self.netPos - self.shortTrade.volume > 0:
+                    self.tradingPnl += self.shortTrade.volume * (self.shortTrade.price - self.posPrice) * size
+                    self.positionPnl = (self.netPos - self.shortTrade.volume) * (self.closePrice - self.posPrice) * size
+                elif self.netPos - self.shortTrade.volume < 0:
+                    self.tradingPnl += self.netPos * (self.shortTrade.price - self.posPrice) * size
+                    self.posPrice = self.shortTrade.price
+                    self.positionPnl = (self.netPos - self.shortTrade.volume) * (self.posPrice - self.shortTrade.price) * size
+                else:
+                    self.tradingPnl += self.shortTrade.volume * (self.shortTrade.price - self.posPrice) * size
+                    self.posPrice = 0
+                    self.positionPnl = 0
+            else:
+                self.posPrice = self.shortTrade.price 
+                self.positionPnl = self.shortTrade.volume * (self.shortTrade.price - self.posPrice)
+                
+            self.netPos -= self.shortTrade.volume
+            # 计算完之后成交清零
+            self.shortTrade = 0
+            
+        assert self.netPos == self.longPos - self.shortPos
+        
+        self.netPnl = self.totalPnl - self.commission - self.slippage
+    
+    
+########################################################################
+class zfmMultiPos(object):
+    """组合持仓信息"""
+
+    #----------------------------------------------------------------------
+    def __init__(self):
+        """Constructor"""
+        self.name = EMPTY_STRING
+        self.activePos = 0
+        self.passivePos = 0
+        
+        self.positionPrice = 0
+        self.multiPrice = 0
+        
+        self.tradingPnl = 0
+        self.positionPnl = 0 
+        self.totalPnl = 0
+        
+        self.turnover = 0
+        self.commission = 0
+        self.slippage = 0
+        self.netPnl = 0
+        
+        self.multiPos = 0
+        
+    #----------------------------------------------------------------------
+    def addActivePos(self, pos):
+        """增加主动腿持仓情况"""
+        self.activePos = pos
+        
+    #----------------------------------------------------------------------
+    def addPassivePos(self, pos):
+        """增加被动腿持仓情况"""
+        self.passivePos = pos
+        
+    #----------------------------------------------------------------------
+    def setMultiPrice(self, multiPrice):
+        """设置组合现价"""
+        self.multiPrice = multiPrice
+        
+    #----------------------------------------------------------------------
+    def calculatePnl(self):
+        """计算盈亏"""
+        if not self.activePos or not self.passivePos:
+            print 'activePos or passivePos not initialized!!'
+            return
+        
+        self.positionPrice = self.activePos.posPrice - self.passivePos.posPrice 
+        self.tradingPnl = self.activePos.tradingPnl + self.passivePos.tradingPnl
+        self.positionPnl = self.activePos.positionPnl + self.passivePos.positionPnl
+        self.turnover = self.activePos.turnover + self.passivePos.turnover
+        self.commission = self.activePos.commission + self.passivePos.commission
+        self.netPnl = self.activePos.netPnl + self.passivePos.netPnl   
+        
+        self.multiPos = min(abs(self.activePos.netPos), abs(self.passivePos.netPos))
+        if self.activePos.netPos < 0:
+            self.multiPos = -self.multiPos
+           
+    
 ########################################################################
 class MultiLeg(object):
     """"""

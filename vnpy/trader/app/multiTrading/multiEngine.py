@@ -481,9 +481,9 @@ class MultiAlgoEngine(object):
         tradeT = trade.tradeTime
         if tradeT < self.startTime:
             return
-        print trade.__dict__
-        print algo 
-        print self.vtOrderIDAlgoDict
+        #print trade.__dict__
+        #print algo 
+        #print self.vtOrderIDAlgoDict
         
         if algo:
             # 分组合推送成交事件

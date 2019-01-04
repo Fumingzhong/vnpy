@@ -54,15 +54,15 @@
         "activeLeg": {
             "payup": 1, 
             "ratio": 1, 
-            "vtSymbol": "RM901", 
+            "vtSymbol": "rb1905", 
             "multiplier": 1.0
         }, 
-        "name": "RMM.01-01", 
+        "name": "RB.05-10", 
         "passiveLegs": [
             {
                 "payup": 1, 
                 "ratio": -1, 
-                "vtSymbol": "m1901", 
+                "vtSymbol": "rb1910", 
                 "multiplier": -1
             }
         ]
@@ -100,75 +100,7 @@
                 "multiplier": -1
             }
         ]
-    }, 
-    {
-        "activeLeg": {
-            "payup": 1, 
-            "ratio": 1, 
-            "vtSymbol": "ru1901", 
-            "multiplier": 1.0
-        }, 
-        "name": "RU.01-05", 
-        "passiveLegs": [
-            {
-                "payup": 1, 
-                "ratio": -1, 
-                "vtSymbol": "ru1905", 
-                "multiplier": -1
-            }
-        ]
-    }, 
-    {
-        "activeLeg": {
-            "payup": 1, 
-            "ratio": 1, 
-            "vtSymbol": "OI905", 
-            "multiplier": 1.0
-        }, 
-        "name": "OIY.05-05", 
-        "passiveLegs": [
-            {
-                "payup": 1, 
-                "ratio": -1, 
-                "vtSymbol": "y1905", 
-                "multiplier": -1
-            }
-        ]
-    }, 
-    {
-        "activeLeg": {
-            "payup": 1, 
-            "ratio": 1, 
-            "vtSymbol": "v1901", 
-            "multiplier": 1.0
-        }, 
-        "name": "V.01-05", 
-        "passiveLegs": [
-            {
-                "payup": 1, 
-                "ratio": -1, 
-                "vtSymbol": "v1905", 
-                "multiplier": -1
-            }
-        ]
-    }, 
-    {
-        "activeLeg": {
-            "payup": 1, 
-            "ratio": 1, 
-            "vtSymbol": "y1901", 
-            "multiplier": 1.0
-        }, 
-        "name": "Y.01-05", 
-        "passiveLegs": [
-            {
-                "payup": 1, 
-                "ratio": -1, 
-                "vtSymbol": "y1905", 
-                "multiplier": -1
-            }
-        ]
-    }, 
+    },
     {
         "activeLeg": {
             "payup": 1, 
@@ -190,40 +122,6 @@
         "activeLeg": {
             "payup": 1, 
             "ratio": 1, 
-            "vtSymbol": "TA901", 
-            "multiplier": 1.0
-        }, 
-        "name": "TA.01-05", 
-        "passiveLegs": [
-            {
-                "payup": 1, 
-                "ratio": -1, 
-                "vtSymbol": "TA905", 
-                "multiplier": -1.0
-            }
-        ]
-    }, 
-    {
-        "activeLeg": {
-            "payup": 1, 
-            "ratio": 1, 
-            "vtSymbol": "SR901", 
-            "multiplier": 1.0
-        }, 
-        "name": "SR.01-05", 
-        "passiveLegs": [
-            {
-                "payup": 1, 
-                "ratio": -1, 
-                "vtSymbol": "SR905", 
-                "multiplier": -1
-            }
-        ]
-    }, 
-    {
-        "activeLeg": {
-            "payup": 1, 
-            "ratio": 1, 
             "vtSymbol": "pp1905", 
             "multiplier": 1.0
         }, 
@@ -233,40 +131,6 @@
                 "payup": 1, 
                 "ratio": -1, 
                 "vtSymbol": "l1905", 
-                "multiplier": -1
-            }
-        ]
-    }, 
-    {
-        "activeLeg": {
-            "payup": 1, 
-            "ratio": 1, 
-            "vtSymbol": "l1901", 
-            "multiplier": 1.0
-        }, 
-        "name": "L.01-05", 
-        "passiveLegs": [
-            {
-                "payup": 1, 
-                "ratio": -1, 
-                "vtSymbol": "l1905", 
-                "multiplier": -1
-            }
-        ]
-    }, 
-    {
-        "activeLeg": {
-            "payup": 1, 
-            "ratio": 1, 
-            "vtSymbol": "rb1901", 
-            "multiplier": 1.0
-        }, 
-        "name": "RBHC.01-01", 
-        "passiveLegs": [
-            {
-                "payup": 1, 
-                "ratio": -1, 
-                "vtSymbol": "hc1901", 
                 "multiplier": -1
             }
         ]
@@ -304,75 +168,7 @@
                 "multiplier": -1
             }
         ]
-    }, 
-    {
-        "activeLeg": {
-            "payup": 1, 
-            "ratio": 1, 
-            "vtSymbol": "OI901", 
-            "multiplier": 1.0
-        }, 
-        "name": "OIY.01-01", 
-        "passiveLegs": [
-            {
-                "payup": 1, 
-                "ratio": -1, 
-                "vtSymbol": "y1901", 
-                "multiplier": -1
-            }
-        ]
-    }, 
-    {
-        "activeLeg": {
-            "payup": 1, 
-            "ratio": 1, 
-            "vtSymbol": "m1901", 
-            "multiplier": 1.0
-        }, 
-        "name": "M.01-05", 
-        "passiveLegs": [
-            {
-                "payup": 1, 
-                "ratio": -1, 
-                "vtSymbol": "m1905", 
-                "multiplier": -1
-            }
-        ]
-    }, 
-    {
-        "activeLeg": {
-            "payup": 1, 
-            "ratio": 1, 
-            "vtSymbol": "ZC901", 
-            "multiplier": 1.0
-        }, 
-        "name": "ZC.01-05", 
-        "passiveLegs": [
-            {
-                "payup": 1, 
-                "ratio": -1, 
-                "vtSymbol": "ZC905", 
-                "multiplier": -1
-            }
-        ]
-    }, 
-    {
-        "activeLeg": {
-            "payup": 1, 
-            "ratio": 1, 
-            "vtSymbol": "rb1901", 
-            "multiplier": 1.0
-        }, 
-        "name": "RB.01-05", 
-        "passiveLegs": [
-            {
-                "payup": 1, 
-                "ratio": -1, 
-                "vtSymbol": "rb1905", 
-                "multiplier": -1
-            }
-        ]
-    }, 
+    },
     {
         "activeLeg": {
             "payup": 1, 
@@ -389,58 +185,7 @@
                 "multiplier": -1
             }
         ]
-    }, 
-    {
-        "activeLeg": {
-            "payup": 1, 
-            "ratio": 1, 
-            "vtSymbol": "c1901", 
-            "multiplier": 1.0
-        }, 
-        "name": "C.01-05", 
-        "passiveLegs": [
-            {
-                "payup": 1, 
-                "ratio": -1, 
-                "vtSymbol": "c1905", 
-                "multiplier": -1
-            }
-        ]
-    }, 
-    {
-        "activeLeg": {
-            "payup": 1, 
-            "ratio": 1, 
-            "vtSymbol": "ZC905", 
-            "multiplier": 1.0
-        }, 
-        "name": "ZC.05-09", 
-        "passiveLegs": [
-            {
-                "payup": 1, 
-                "ratio": -1, 
-                "vtSymbol": "ZC909", 
-                "multiplier": -1
-            }
-        ]
-    }, 
-    {
-        "activeLeg": {
-            "payup": 1, 
-            "ratio": 1, 
-            "vtSymbol": "OI905", 
-            "multiplier": 1.0
-        }, 
-        "name": "OI.05-09", 
-        "passiveLegs": [
-            {
-                "payup": 1, 
-                "ratio": -1, 
-                "vtSymbol": "OI909", 
-                "multiplier": -1
-            }
-        ]
-    }, 
+    },
     {
         "activeLeg": {
             "payup": 1, 
@@ -479,15 +224,15 @@
         "activeLeg": {
             "payup": 1, 
             "ratio": 1, 
-            "vtSymbol": "rb1905", 
+            "vtSymbol": "cs1905", 
             "multiplier": 1.0
         }, 
-        "name": "RB.05-10", 
+        "name": "CS.05-09", 
         "passiveLegs": [
             {
                 "payup": 1, 
                 "ratio": -1, 
-                "vtSymbol": "rb1910", 
+                "vtSymbol": "cs1909", 
                 "multiplier": -1
             }
         ]
@@ -508,24 +253,7 @@
                 "multiplier": -1
             }
         ]
-    }, 
-    {
-        "activeLeg": {
-            "payup": 1, 
-            "ratio": 1, 
-            "vtSymbol": "cs1901", 
-            "multiplier": 1.0
-        }, 
-        "name": "CS.01-05", 
-        "passiveLegs": [
-            {
-                "payup": 1, 
-                "ratio": -1, 
-                "vtSymbol": "cs1905", 
-                "multiplier": -1
-            }
-        ]
-    }, 
+    },
     {
         "activeLeg": {
             "payup": 1, 
@@ -542,41 +270,7 @@
                 "multiplier": -1
             }
         ]
-    }, 
-    {
-        "activeLeg": {
-            "payup": 1, 
-            "ratio": 1, 
-            "vtSymbol": "ag1901", 
-            "multiplier": 1.0
-        }, 
-        "name": "AG.01-06", 
-        "passiveLegs": [
-            {
-                "payup": 1, 
-                "ratio": -1, 
-                "vtSymbol": "ag1906", 
-                "multiplier": -1
-            }
-        ]
-    }, 
-    {
-        "activeLeg": {
-            "payup": 1, 
-            "ratio": 1, 
-            "vtSymbol": "a1901", 
-            "multiplier": 1.0
-        }, 
-        "name": "A.01-05", 
-        "passiveLegs": [
-            {
-                "payup": 1, 
-                "ratio": -1, 
-                "vtSymbol": "a1905", 
-                "multiplier": -1
-            }
-        ]
-    }, 
+    },
     {
         "activeLeg": {
             "payup": 1, 
@@ -593,24 +287,7 @@
                 "multiplier": -1
             }
         ]
-    }, 
-    {
-        "activeLeg": {
-            "payup": 1, 
-            "ratio": 1, 
-            "vtSymbol": "FG901", 
-            "multiplier": 1.0
-        }, 
-        "name": "FG.01-05", 
-        "passiveLegs": [
-            {
-                "payup": 1, 
-                "ratio": -1, 
-                "vtSymbol": "FG905", 
-                "multiplier": -1.0
-            }
-        ]
-    }, 
+    },
     {
         "activeLeg": {
             "payup": 1, 
@@ -627,58 +304,7 @@
                 "multiplier": -1
             }
         ]
-    }, 
-    {
-        "activeLeg": {
-            "payup": 1, 
-            "ratio": 1, 
-            "vtSymbol": "i1901", 
-            "multiplier": 1.0
-        }, 
-        "name": "I.01-05", 
-        "passiveLegs": [
-            {
-                "payup": 1, 
-                "ratio": -1, 
-                "vtSymbol": "i1905", 
-                "multiplier": -1
-            }
-        ]
-    }, 
-    {
-        "activeLeg": {
-            "payup": 1, 
-            "ratio": 1, 
-            "vtSymbol": "CF901", 
-            "multiplier": 1.0
-        }, 
-        "name": "CF.01-05", 
-        "passiveLegs": [
-            {
-                "payup": 1, 
-                "ratio": -1, 
-                "vtSymbol": "CF905", 
-                "multiplier": -1
-            }
-        ]
-    }, 
-    {
-        "activeLeg": {
-            "payup": 1, 
-            "ratio": 1, 
-            "vtSymbol": "pp1901", 
-            "multiplier": 1.0
-        }, 
-        "name": "PP.01-05", 
-        "passiveLegs": [
-            {
-                "payup": 1, 
-                "ratio": -1, 
-                "vtSymbol": "pp1905", 
-                "multiplier": -1
-            }
-        ]
-    }, 
+    },
     {
         "activeLeg": {
             "payup": 1, 
@@ -695,58 +321,7 @@
                 "multiplier": -1
             }
         ]
-    }, 
-    {
-        "activeLeg": {
-            "payup": 1, 
-            "ratio": 1, 
-            "vtSymbol": "hc1901", 
-            "multiplier": 1.0
-        }, 
-        "name": "HC.01-05", 
-        "passiveLegs": [
-            {
-                "payup": 1, 
-                "ratio": -1, 
-                "vtSymbol": "hc1905", 
-                "multiplier": -1
-            }
-        ]
-    }, 
-    {
-        "activeLeg": {
-            "payup": 1, 
-            "ratio": 1, 
-            "vtSymbol": "j1901", 
-            "multiplier": 1.0
-        }, 
-        "name": "J.01-05", 
-        "passiveLegs": [
-            {
-                "payup": 1, 
-                "ratio": -1, 
-                "vtSymbol": "j1905", 
-                "multiplier": -1
-            }
-        ]
-    }, 
-    {
-        "activeLeg": {
-            "payup": 1, 
-            "ratio": 1, 
-            "vtSymbol": "p1901", 
-            "multiplier": 1.0
-        }, 
-        "name": "P.01-05", 
-        "passiveLegs": [
-            {
-                "payup": 1, 
-                "ratio": -1, 
-                "vtSymbol": "p1905", 
-                "multiplier": -1
-            }
-        ]
-    }, 
+    },
     {
         "activeLeg": {
             "payup": 1, 
@@ -785,53 +360,19 @@
         "activeLeg": {
             "payup": 1, 
             "ratio": 1, 
-            "vtSymbol": "c1901", 
+            "vtSymbol": "au1904", 
             "multiplier": 1.0
         }, 
-        "name": "CCS.01-01", 
+        "name": "AU.04-06", 
         "passiveLegs": [
             {
                 "payup": 1, 
                 "ratio": -1, 
-                "vtSymbol": "c1901", 
+                "vtSymbol": "au1906", 
                 "multiplier": -1
             }
         ]
-    }, 
-    {
-        "activeLeg": {
-            "payup": 1, 
-            "ratio": 1, 
-            "vtSymbol": "jd1901", 
-            "multiplier": 1.0
-        }, 
-        "name": "JD.01-05", 
-        "passiveLegs": [
-            {
-                "payup": 1, 
-                "ratio": -1, 
-                "vtSymbol": "jd1905", 
-                "multiplier": -1
-            }
-        ]
-    }, 
-    {
-        "activeLeg": {
-            "payup": 1, 
-            "ratio": 1, 
-            "vtSymbol": "y1901", 
-            "multiplier": 1.0
-        }, 
-        "name": "YP.01-01", 
-        "passiveLegs": [
-            {
-                "payup": 1, 
-                "ratio": -1, 
-                "vtSymbol": "p1901", 
-                "multiplier": -1
-            }
-        ]
-    }, 
+    },
     {
         "activeLeg": {
             "payup": 1, 
@@ -865,24 +406,7 @@
                 "multiplier": -1
             }
         ]
-    }, 
-    {
-        "activeLeg": {
-            "payup": 1, 
-            "ratio": 1, 
-            "vtSymbol": "OI901", 
-            "multiplier": 1.0
-        }, 
-        "name": "OI.01-05", 
-        "passiveLegs": [
-            {
-                "payup": 1, 
-                "ratio": -1, 
-                "vtSymbol": "OI905", 
-                "multiplier": -1
-            }
-        ]
-    }, 
+    },
     {
         "activeLeg": {
             "payup": 1, 
@@ -904,32 +428,32 @@
         "activeLeg": {
             "payup": 1, 
             "ratio": 1, 
-            "vtSymbol": "j1901", 
+            "vtSymbol": "OI905", 
             "multiplier": 1.0
         }, 
-        "name": "JJM.01-01", 
+        "name": "OIY.05-05", 
         "passiveLegs": [
             {
                 "payup": 1, 
                 "ratio": -1, 
-                "vtSymbol": "jm1901", 
+                "vtSymbol": "y1905", 
                 "multiplier": -1
             }
         ]
-    }, 
+    },
     {
         "activeLeg": {
             "payup": 1, 
             "ratio": 1, 
-            "vtSymbol": "MA901", 
+            "vtSymbol": "ZC905", 
             "multiplier": 1.0
         }, 
-        "name": "MA.01-05", 
+        "name": "ZC.05-09", 
         "passiveLegs": [
             {
                 "payup": 1, 
                 "ratio": -1, 
-                "vtSymbol": "MA905", 
+                "vtSymbol": "ZC909", 
                 "multiplier": -1
             }
         ]
@@ -955,32 +479,15 @@
         "activeLeg": {
             "payup": 1, 
             "ratio": 1, 
-            "vtSymbol": "cs1905", 
+            "vtSymbol": "OI905", 
             "multiplier": 1.0
         }, 
-        "name": "CS.05-09", 
+        "name": "OI.05-09", 
         "passiveLegs": [
             {
                 "payup": 1, 
                 "ratio": -1, 
-                "vtSymbol": "cs1909", 
-                "multiplier": -1
-            }
-        ]
-    }, 
-    {
-        "activeLeg": {
-            "payup": 1, 
-            "ratio": 1, 
-            "vtSymbol": "jm1905", 
-            "multiplier": 1.0
-        }, 
-        "name": "JM.05-09", 
-        "passiveLegs": [
-            {
-                "payup": 1, 
-                "ratio": -1, 
-                "vtSymbol": "jm1909", 
+                "vtSymbol": "OI909", 
                 "multiplier": -1
             }
         ]
@@ -1001,24 +508,7 @@
                 "multiplier": -1
             }
         ]
-    }, 
-    {
-        "activeLeg": {
-            "payup": 1, 
-            "ratio": 1, 
-            "vtSymbol": "fb1901", 
-            "multiplier": 1.0
-        }, 
-        "name": "FB.01-05", 
-        "passiveLegs": [
-            {
-                "payup": 1, 
-                "ratio": -1, 
-                "vtSymbol": "fb1905", 
-                "multiplier": -1
-            }
-        ]
-    }, 
+    },
     {
         "activeLeg": {
             "payup": 1, 
@@ -1035,24 +525,7 @@
                 "multiplier": -1
             }
         ]
-    }, 
-    {
-        "activeLeg": {
-            "payup": 1, 
-            "ratio": 1, 
-            "vtSymbol": "jm1901", 
-            "multiplier": 1.0
-        }, 
-        "name": "JM.01-05", 
-        "passiveLegs": [
-            {
-                "payup": 1, 
-                "ratio": -1, 
-                "vtSymbol": "jm1905", 
-                "multiplier": -1
-            }
-        ]
-    }, 
+    },
     {
         "activeLeg": {
             "payup": 1, 
@@ -1069,41 +542,7 @@
                 "multiplier": -1
             }
         ]
-    }, 
-    {
-        "activeLeg": {
-            "payup": 1, 
-            "ratio": 1, 
-            "vtSymbol": "pp1901", 
-            "multiplier": 1.0
-        }, 
-        "name": "PPL.01-01", 
-        "passiveLegs": [
-            {
-                "payup": 1, 
-                "ratio": -1, 
-                "vtSymbol": "l1901", 
-                "multiplier": -1
-            }
-        ]
-    }, 
-    {
-        "activeLeg": {
-            "payup": 1, 
-            "ratio": 1, 
-            "vtSymbol": "au1904", 
-            "multiplier": 1.0
-        }, 
-        "name": "AU.04-06", 
-        "passiveLegs": [
-            {
-                "payup": 1, 
-                "ratio": -1, 
-                "vtSymbol": "au1906", 
-                "multiplier": -1
-            }
-        ]
-    }, 
+    },
     {
         "activeLeg": {
             "payup": 1, 
@@ -1120,37 +559,20 @@
                 "multiplier": -1
             }
         ]
-    }, 
+    },
     {
         "activeLeg": {
             "payup": 1, 
             "ratio": 1, 
-            "vtSymbol": "bb1901", 
+            "vtSymbol": "jm1905", 
             "multiplier": 1.0
         }, 
-        "name": "BB.01-05", 
+        "name": "JM.05-09", 
         "passiveLegs": [
             {
                 "payup": 1, 
                 "ratio": -1, 
-                "vtSymbol": "bb1905", 
-                "multiplier": -1
-            }
-        ]
-    }, 
-    {
-        "activeLeg": {
-            "payup": 1, 
-            "ratio": 1, 
-            "vtSymbol": "RM901", 
-            "multiplier": 1.0
-        }, 
-        "name": "RM.01-05", 
-        "passiveLegs": [
-            {
-                "payup": 1, 
-                "ratio": -1, 
-                "vtSymbol": "RM905", 
+                "vtSymbol": "jm1909", 
                 "multiplier": -1
             }
         ]

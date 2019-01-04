@@ -33,6 +33,8 @@ class ParamEngine(object):
         """Constructor"""
         if paramFile:
             d = loadJson(paramFile)
+        else:
+            pass
         
         
     
